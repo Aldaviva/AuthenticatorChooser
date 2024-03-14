@@ -43,7 +43,7 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
 ## Requirements
 
 - Windows 11 23H2 or later, or Windows 11 22H2 with Moment 4 (KB5031455 or KB5030310)
-- [.NET 8 Desktop Runtime for Windows x64](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
+- [.NET Desktop Runtime 8 for Windows x64](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
 
 ## Installation
 
