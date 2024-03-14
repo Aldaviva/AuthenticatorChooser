@@ -1,0 +1,33 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    env:
+      ProjectName: AuthenticatorChooser
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Clone
+      uses: actions/checkout@v4
+        
+    - name: Restore
+      run: dotnet restore --locked-mode --verbosity normal
+
+    - name: Build
+      run: dotnet build ${{ env.ProjectName }} --no-restore --configuration Release --no-self-contained --verbosity normal
+
+    - name: Publish
+      run: dotnet publish ${{ env.ProjectName }} --no-build --configuration Release -p:PublishSingleFile=true --self-contained false
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ProjectName }}.exe
+        path: ${{ env.ProjectName }}/bin/Release/net8.0-windows/win-x64/publish/*.exe
+        if-no-files-found: error

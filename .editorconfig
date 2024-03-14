@@ -1,0 +1,41 @@
+[*]
+
+# Exception Analyzers: Exception adjustments syntax error
+# default = error
+; dotnet_diagnostic.Ex0001.severity = none
+
+# Exception Analyzers: Exception adjustments syntax error: Symbol does not exist or identifier is invalid
+# default = warning
+; dotnet_diagnostic.Ex0002.severity = none
+
+# Exception Analyzers: Member may throw undocumented exception
+# default = warning
+dotnet_diagnostic.Ex0100.severity = none
+
+# Exception Analyzers: Member accessor may throw undocumented exception
+# default = warning
+dotnet_diagnostic.Ex0101.severity = none
+
+# Exception Analyzers: Implicit constructor may throw undocumented exception
+# default = warning
+dotnet_diagnostic.Ex0103.severity = none
+
+# Exception Analyzers: Member initializer may throw undocumented exception
+# default = warning
+dotnet_diagnostic.Ex0104.severity = none
+
+# Exception Analyzers: Delegate created from member may throw undocumented exception
+# default = silent
+; dotnet_diagnostic.Ex0120.severity = none
+
+# Exception Analyzers: Delegate created from anonymous function may throw undocumented exception
+# default = silent
+; dotnet_diagnostic.Ex0121.severity = none
+
+# Exception Analyzers: Member is documented as throwing exception not documented on member in base or interface type
+# default = warning
+dotnet_diagnostic.Ex0200.severity = none
+
+# Exception Analyzers: Member accessor is documented as throwing exception not documented on member in base or interface type
+# default = warning
+dotnet_diagnostic.Ex0201.severity = none
