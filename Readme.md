@@ -16,9 +16,9 @@
 
 ## Problem
 
-Windows can display a Windows Hello credential prompt when requested by a program, such as a browser with WebAuthn. This allows you to authenticate using a FIDO authenticator, such as a USB security key or a passkey in your computer's TPM protected by a PIN or biometrics.
+Windows can display a Windows Security credential prompt when requested by a program, such as a browser with WebAuthn. This allows you to authenticate using a FIDO authenticator, such as a USB security key or a passkey in your computer's TPM protected by a Windows Hello PIN or biometrics, like a fingerprint.
 
-In Windows 10 and 11 prior to 22H2 Moment 4 (September 2023), if the TPM contains the private key needed to authenticate to the relying party (like a website), Windows will prioritize prompting for the user's challenge (like a PIN) for this TPM authenticator first. Windows will still provide an option to choose a different authenticator (like a USB security key) with an additional click. Otherwise, if the TPM does not contain the required secret, Windows will prompt you to insert a USB security key.
+In Windows 10 and 11 prior to 22H2 Moment 4 (September 2023), if the TPM contains the private key needed to authenticate to the relying party (like a website), Windows will prioritize prompting for the user's challenge (like a PIN or fingerprint) for this TPM authenticator first. Windows will still provide an option to choose a different authenticator (like a USB security key) with an additional click. Otherwise, if the TPM does not contain the required secret, Windows will immediately prompt you to insert a USB security key.
 
 <p align="center"><img src=".github/images/usb-prompt.png" alt="usb security key prompt" width="456" /></p> 
 
@@ -43,13 +43,16 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
 ## Requirements
 
 - Windows 11 23H2 or later, or Windows 11 22H2 with Moment 4 (KB5031455 or KB5030310)
+    - It can also run on earlier versions, such as Windows 11 21H2 and Windows 10, although it won't do anything there because the problem is not present on those versions.
 - [.NET Desktop Runtime 8 for Windows x64](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
 
 ## Installation
 
-1. [Download `AuthenticatorChooser.exe` from the latest release.](https://github.com/Aldaviva/AuthenticatorChooser/releases/latest/download/AuthenticatorChooser.exe)
-1. Save `AuthenticatorChooser.exe` file to a directory like `C:\Program Files\AuthenticatorChooser\`.
-1. Register the program to run on user logon using one of the following techniques.
+1. [Download `AuthenticatorChooser.exe` from the latest release.](https://github.com/Aldaviva/AuthenticatorChooser/releases/latest/download/AuthenticatorChooser.exe).
+1. Save the `AuthenticatorChooser.exe` file to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
+1. Run the program by double-clicking `AuthenticatorChooser.exe`.
+    - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
+1. Register the program to run automatically on user logon with one of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2.
     - Import a `.reg` file
         ```reg
         Windows Registry Editor Version 5.00
@@ -65,4 +68,4 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
         ```ps1
         Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name AuthenticatorChooser -Value """C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"""
         ```
-    - Use `regedit.exe` to interactively add `AuthenticatorChooser` as a new string value to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, with the data of the absolute path to `AuthenticatorChooser.exe`, such as `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`.
+    - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with `AuthenticatorChooser` as the Name, and the absolute path to `AuthenticatorChooser.exe` (such as `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`) as the Value.
