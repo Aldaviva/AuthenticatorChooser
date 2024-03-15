@@ -48,7 +48,7 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
 
 ## Installation
 
-1. [Download `AuthenticatorChooser.exe` from the latest release.](https://github.com/Aldaviva/AuthenticatorChooser/releases/latest/download/AuthenticatorChooser.exe).
+1. [Download `AuthenticatorChooser.exe` from the latest release.](https://github.com/Aldaviva/AuthenticatorChooser/releases/latest/download/AuthenticatorChooser.exe)
 1. Save the `AuthenticatorChooser.exe` file to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
@@ -68,4 +68,4 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
         ```ps1
         Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name AuthenticatorChooser -Value """C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"""
         ```
-    - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with `AuthenticatorChooser` as the Name, and the absolute path to `AuthenticatorChooser.exe` (such as `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`) as the Value.
+    - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`.
