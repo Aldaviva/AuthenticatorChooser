@@ -36,6 +36,8 @@ internal static class Program {
             return;
         }
 
+        fidoPrompt.TopMost = true;
+
         Console.WriteLine($"Found FIDO prompt window (HWND=0x{fidoPrompt.HWnd:x}) after {stopwatch.ElapsedMilliseconds:N0} ms");
         AutomationElement fidoEl = fidoPrompt.toAutomationElement();
         Console.WriteLine($"Converted window to AutomationElement after {stopwatch.ElapsedMilliseconds:N0} ms");
