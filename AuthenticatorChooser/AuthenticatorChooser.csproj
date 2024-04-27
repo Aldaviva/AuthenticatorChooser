@@ -24,7 +24,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Foregrounder" Version="0.0.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
+        <PackageReference Include="SimWinMouse" Version="1.0.2" />
         <PackageReference Include="ThrottleDebounce" Version="2.0.0" />
         <PackageReference Include="Workshell.PE.Resources" Version="3.0.0.130" />
     </ItemGroup>

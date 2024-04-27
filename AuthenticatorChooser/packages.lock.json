@@ -2,6 +2,18 @@
   "version": 1,
   "dependencies": {
     "net8.0-windows7.0": {
+      "Foregrounder": {
+        "type": "Direct",
+        "requested": "[0.0.1, )",
+        "resolved": "0.0.1",
+        "contentHash": "jaMMowUJsHjVVfr5s4HltdyKHmZJm3aJ1WEcK8k0JQKXl4tLTLh0I7KLlP0KS7sN/RXItVjGG+yt7nowOBs2WQ=="
+      },
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[8.0.4, )",
+        "resolved": "8.0.4",
+        "contentHash": "PZb5nfQ+U19nhnmnR9T1jw+LTmozhuG2eeuzuW5A7DqxD/UXW2ucjmNJqnqOuh8rdPzM3MQXoF8AfFCedJdCUw=="
+      },
       "mwinapi": {
         "type": "Direct",
         "requested": "[0.3.0.5, )",
@@ -10,6 +22,12 @@
         "dependencies": {
           "System.Management": "6.0.0"
         }
+      },
+      "SimWinMouse": {
+        "type": "Direct",
+        "requested": "[1.0.2, )",
+        "resolved": "1.0.2",
+        "contentHash": "uG0VbsJyjJkFnAt979yEWGxe5i0YaCyCjAlpLTn7lTbMaVYm0EqVgz6KlCa+nAmtA9qAw2KaXfn21OHChJdXFw=="
       },
       "ThrottleDebounce": {
         "type": "Direct",

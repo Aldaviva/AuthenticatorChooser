@@ -20,6 +20,7 @@ public class WindowOpeningListenerImpl: WindowOpeningListener {
 
     private void onWindowOpened(object? sender, ShellEventArgs args) {
         if (args.shellEvent == ShellEventArgs.ShellEvent.HSHELL_WINDOWCREATED) {
+            Console.WriteLine("Window opened");
             windowOpened?.Invoke(this, new SystemWindow(args.windowHandle));
         }
     }

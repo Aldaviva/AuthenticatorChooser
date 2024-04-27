@@ -22,6 +22,7 @@ public class ShellHookImpl: Form, ShellHook {
 
     protected override void WndProc(ref Message message) {
         if (message.Msg == subscriptionId) {
+            // Console.WriteLine($"Shell event {message.WParam} received");
             shellEvent?.Invoke(this, new ShellEventArgs(shellEvent: (ShellEventArgs.ShellEvent) message.WParam.ToInt32(), windowHandle: message.LParam));
         }
 
