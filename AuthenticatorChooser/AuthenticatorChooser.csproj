@@ -6,12 +6,11 @@
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <ApplicationManifest>app.manifest</ApplicationManifest>
         <Version>0.0.1</Version>
         <Authors>Ben Hutchison</Authors>
         <Copyright>© 2024 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
-        <RollForward>major</RollForward>
+        <RollForward>latestMajor</RollForward>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ApplicationIcon>YubiKey.ico</ApplicationIcon>
