@@ -36,7 +36,7 @@ This is a background program that runs headlessly in your Windows user session. 
 
 This program does not interfere with local passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides smartphone Bluetooth and USB security keys, such as the case when you previously declined a Windows Hello factor like a PIN, but want to try a PIN again from the authenticator choice dialog.
 
-If this program skips the authenticator choice dialog when you don't want it to, for example, if you want to use a smartphone Bluetooth passkey only once or infrequently, you can hold `Shift` when the dialog appears to temporarily suppress this program from automatically submitting the security key choice once.
+If this program skips the authenticator choice dialog when you don't want it to, for example, if you want to use a smartphone Bluetooth passkey only once or infrequently, you can hold <kbd>Shift</kbd> when the dialog appears to temporarily suppress this program from automatically submitting the security key choice once.
 
 Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog box.
 
