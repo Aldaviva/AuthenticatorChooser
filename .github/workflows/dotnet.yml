@@ -12,6 +12,12 @@ jobs:
 
     runs-on: windows-latest
 
+    strategy:
+      matrix:
+        include:
+          - targetPlatform: win-x64
+          - targetPlatform: win-arm64
+
     steps:
     - name: Clone
       uses: actions/checkout@v4
@@ -20,14 +26,14 @@ jobs:
       run: dotnet restore --locked-mode --verbosity normal
 
     - name: Build
-      run: dotnet build ${{ env.ProjectName }} --no-restore --configuration Release --no-self-contained --verbosity normal
+      run: dotnet build ${{ env.ProjectName }} --no-restore --runtime ${{ matrix.targetPlatform }} --configuration Release --no-self-contained
 
     - name: Publish
-      run: dotnet publish ${{ env.ProjectName }} --no-build --configuration Release -p:PublishSingleFile=true --self-contained false
+      run: dotnet publish ${{ env.ProjectName }} --no-build --runtime ${{ matrix.targetPlatform }} --configuration Release --no-self-contained -p:PublishSingleFile=true
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.ProjectName }}.exe
-        path: ${{ env.ProjectName }}/bin/Release/net8.0-windows/win-x64/publish/*.exe
+        name: ${{ env.ProjectName }}-${{ matrix.targetPlatform }}
+        path: ${{ env.ProjectName }}/bin/Release/net8.0-windows/${{ matrix.targetPlatform }}/publish/*.exe
         if-no-files-found: error

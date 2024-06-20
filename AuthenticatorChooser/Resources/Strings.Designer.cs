@@ -70,6 +70,15 @@ namespace AuthenticatorChooser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sign in with your passkey.
+        /// </summary>
+        internal static string signInWithYourPasskey {
+            get {
+                return ResourceManager.GetString("signInWithYourPasskey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to iPhone, iPad, or Android device.
         /// </summary>
         internal static string smartphone {

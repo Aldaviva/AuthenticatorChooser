@@ -44,12 +44,13 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
 
 - Windows 11 23H2 or later, or Windows 11 22H2 with Moment 4 (KB5031455 or KB5030310)
     - It can also run on earlier versions, such as Windows 11 21H2 and Windows 10, although it won't do anything there because the problem is not present on those versions.
-- [.NET Desktop Runtime 8 for Windows x64](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
+- [.NET Desktop Runtime 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
+    - This program is compatible with x64 and ARM64 CPU architectures
 
 ## Installation
 
-1. [Download `AuthenticatorChooser.exe` from the latest release.](https://github.com/Aldaviva/AuthenticatorChooser/releases/latest/download/AuthenticatorChooser.exe)
-1. Save the `AuthenticatorChooser.exe` file to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
+1. [Download the latest release ZIP archive for your CPU architecture.](https://github.com/Aldaviva/AuthenticatorChooser/releases/latest)
+1. Extract the `AuthenticatorChooser.exe` file from the ZIP archive to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
 1. Register the program to run automatically on user logon with one of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2.
