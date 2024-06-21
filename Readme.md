@@ -24,7 +24,7 @@ In Windows 10 and 11 prior to 22H2 Moment 4 (September 2023), if the TPM contain
 
 In Windows 11 [22H2 Moment 4](https://www.bleepingcomputer.com/news/microsoft/windows-11-moment-4-update-released-here-are-the-many-new-features/) (September 2023) and later (including [23H2](https://www.bleepingcomputer.com/news/microsoft/windows-11-23h2-new-features-in-the-windows-11-2023-update/)), this behavior changed to include the ability to pair with Android and iOS devices over Bluetooth to use their passkeys, which somewhat ameliorates the problem of passkeys not being portable outside their TPM. The behavior is unchanged if the Windows TPM contains the passkey. However, if the local TPM does not contain the passkey, an additional "Sign in with your passkey" step was added before you can use your USB security key.
 
-Now it says "To sign in to “`domain`”, choose a device with a saved passkey," and you have to choose whether you want to use an "iPhone, iPad, or Android device" or a "Security key," and smartphone is the default choice. Choosing the USB security key requires two additional clicks or four additional keystrokes. It is impossible to opt out of this new prompt, even if you disable Bluetooth, don't have an Android or iOS device, or never want to use it for FIDO authentication on your Windows computer. Windows does not remember the most recently used authenticator, either. You could disable your Bluetooth device in Device Manager, but this will also prevent you from using any other Bluetooth peripherals with your computer, such as mice, keyboards, headphones, speakers, and tracker tags.
+Now it says "To sign in to “`domain`”, choose a device with a saved passkey," and you have to choose whether you want to use an "iPhone, iPad, or Android device" or a "Security key," and smartphone is the default choice. Choosing the USB security key requires two additional clicks or four additional keystrokes. It is impossible to opt out of this new prompt, even if you disable Bluetooth, don't have an Android or iOS device, or never want to use it for FIDO authentication on your Windows computer. Windows does not remember the most recently used authenticator, either. You could disable your Bluetooth device in Device Manager, but this will also prevent you from using any other Bluetooth peripherals with your computer, such as Bluetooth mice, keyboards, headphones, speakers, and proximity location trackers.
 
 <p align="center"><img src=".github/images/authenticator-prompt.png" alt="authenticator prompt" width="456" /></p>     
 
@@ -34,7 +34,7 @@ This is a background program that runs headlessly in your Windows user session. 
 
 <p align="center"><img src=".github/images/demo.gif" alt="demo" width="464" /></p>     
 
-This program does not interfere with local passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides smartphone Bluetooth and USB security keys, such as the case when you previously declined a Windows Hello factor like a PIN, but want to try a PIN again from the authenticator choice dialog.
+This program does not interfere with local TPM passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides a USB security key and pairing a new Bluetooth smartphone, such as the cases when you already have a paired phone, or you previously declined a Windows Hello factor like a PIN but want to try a PIN again from the authenticator choice dialog. You can [edit the registry if you want to unpair an exisiting phone](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Unpairing-Bluetooth-smartphone).
 
 If this program skips the authenticator choice dialog when you don't want it to, for example, if you want to use a smartphone Bluetooth passkey only once or infrequently, you can hold <kbd>Shift</kbd> when the dialog appears to temporarily suppress this program from automatically submitting the security key choice once.
 
@@ -43,7 +43,7 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
 ## Requirements
 
 - Windows 11 23H2 or later, or Windows 11 22H2 with Moment 4 (KB5031455 or KB5030310)
-    - It can also run on earlier versions, such as Windows 11 21H2 and Windows 10, although it won't do anything there because the problem is not present on those versions.
+    - It can also run on earlier versions, such as Windows 11 21H2 and Windows 10, although it won't do anything there because those versions can't pair and exchange passkeys with phones in the first place.
 - [.NET Desktop Runtime 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
     - This program is compatible with x64 and ARM64 CPU architectures
 
