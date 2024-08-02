@@ -19,12 +19,12 @@
       },
       "Workshell.PE.Resources": {
         "type": "Direct",
-        "requested": "[3.0.0.130, )",
-        "resolved": "3.0.0.130",
-        "contentHash": "RObngIYwLnqC/KEL77zTMSw6Vazh3vnoGFCuwp4DJQvrEjEgi1KuBT0ClsgcXyOKf4myIBIW6FiQ5HjWXecLZw==",
+        "requested": "[4.0.0.147, )",
+        "resolved": "4.0.0.147",
+        "contentHash": "ZX8AusOHS5MeLrfLar2kHE6QqCyF/XRkkuPczfhoIGo0geI9DHqwyu303rw+Q+gaoBcdi7GkwB+v6QRUvIzdgA==",
         "dependencies": {
           "System.Drawing.Common": "7.0.0",
-          "Workshell.PE": "3.0.0.130"
+          "Workshell.PE": "4.0.0.147"
         }
       },
       "Microsoft.Win32.SystemEvents": {
@@ -55,8 +55,8 @@
       },
       "Workshell.PE": {
         "type": "Transitive",
-        "resolved": "3.0.0.130",
-        "contentHash": "KSQ0tjhvHLrxY7rERW7jBCYGZrlW8w2DEYBEt6VPkJwplJzZdZ5BTbv0wttVBFzalcL9UJ56FMxpusg890nxCQ=="
+        "resolved": "4.0.0.147",
+        "contentHash": "iDvqFHgx9j4jlfRQEMk6VM5kf3AKVim7ZVveap96hxYh5ppRTY83f4ByNdvTHS9Jw3t6h2KPK8ZtRW7rinna1g=="
       }
     },
     "net8.0-windows7.0/win-arm64": {

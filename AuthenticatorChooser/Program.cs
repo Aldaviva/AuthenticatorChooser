@@ -21,7 +21,6 @@ internal static class Program {
 
         _ = I18N.getStrings(I18N.Key.SMARTPHONE); // ensure localization is loaded eagerly
 
-        Console.WriteLine();
         Application.Run();
     }
 

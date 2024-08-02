@@ -80,7 +80,7 @@ public static class I18N {
             }
 
             return results;
-        } catch (FileNotFoundException) { } catch (DirectoryNotFoundException) { }
+        } catch (FileNotFoundException) { } catch (DirectoryNotFoundException) { } catch (PortableExecutableImageException) { }
 
         return [];
     }
