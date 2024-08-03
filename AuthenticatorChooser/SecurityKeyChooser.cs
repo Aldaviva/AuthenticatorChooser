@@ -10,43 +10,30 @@ public static class SecurityKeyChooser {
     private static readonly TimeSpan UI_RETRY_DELAY = TimeSpan.FromMilliseconds(8);
 
     public static void chooseUsbSecurityKey(SystemWindow fidoPrompt) {
-        if (!isFidoPromptWindow(fidoPrompt)) {
-            // Window is not a Windows Security window
-            return;
-        }
+        if (isFidoPromptWindow(fidoPrompt)) {
+            AutomationElement  fidoEl            = fidoPrompt.toAutomationElement();
+            AutomationElement? outerScrollViewer = fidoEl.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.ClassNameProperty, "ScrollViewer"));
+            AutomationElement? promptTitleEl = outerScrollViewer?.FindFirst(TreeScope.Children, new AndCondition(
+                new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock"),
+                new OrCondition(I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Select<string, Condition>(s => new PropertyCondition(AutomationElement.NameProperty, s)).ToArray())));
 
-        AutomationElement  fidoEl            = fidoPrompt.toAutomationElement();
-        AutomationElement? outerScrollViewer = fidoEl.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.ClassNameProperty, "ScrollViewer"));
-        AutomationElement? promptTitleEl = outerScrollViewer?.FindFirst(TreeScope.Children, new AndCondition(
-            new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock"),
-            new OrCondition(I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Select<string, Condition>(s => new PropertyCondition(AutomationElement.NameProperty, s)).ToArray())));
+            if (outerScrollViewer != null && promptTitleEl != null) {
+                List<AutomationElement> listItems = Retrier.Attempt(_ =>
+                        outerScrollViewer.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "CredentialsList")).children().ToList(),
+                    maxAttempts: 25, delay: _ => UI_RETRY_DELAY);
 
-        if (outerScrollViewer == null || promptTitleEl == null) {
-            // Window is not a passkey reading prompt
-            return;
-        }
+                if (listItems.FirstOrDefault(listItem => nameContainsAny(listItem, I18N.getStrings(I18N.Key.SECURITY_KEY))) is { } securityKeyButton) {
+                    ((SelectionItemPattern) securityKeyButton.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
 
-        List<AutomationElement> listItems = Retrier.Attempt(_ =>
-                outerScrollViewer.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "CredentialsList")).children().ToList(),
-            maxAttempts: 25, delay: _ => UI_RETRY_DELAY);
+                    if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift)
+                        && listItems.All(listItem => listItem == securityKeyButton || nameContainsAny(listItem, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
 
-        if (listItems.FirstOrDefault(listItem => nameContainsAny(listItem, I18N.getStrings(I18N.Key.SECURITY_KEY))) is not { } securityKeyButton) {
-            // USB security key is not a choice, skipping
-            return;
-        }
-
-        ((SelectionItemPattern) securityKeyButton.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
-
-        if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
-            // Shift is pressed, not submitting dialog box
-            return;
-        } else if (!listItems.All(listItem => listItem == securityKeyButton || nameContainsAny(listItem, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
-            // Dialog box has a choice that isn't smartphone or USB security key (such as PIN or biometrics), skipping because the user might want to choose it
-            return;
-        }
-
-        AutomationElement nextButton = fidoEl.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton"));
-        ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+                        AutomationElement nextButton = fidoEl.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton"));
+                        ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+                    } // Otherwise shift key was held down, or prompt contained extra options besides USB security key and pairing a new phone, such as an existing paired phone, PIN, or fingerprint
+                }     // Otherwise USB security key was not an option
+            }         // Otherwise could not find title, might be a UAC prompt
+        }             // Otherwise not a credential prompt, wrong window class name
     }
 
     private static bool nameContainsAny(AutomationElement element, IEnumerable<string?> suffices) {

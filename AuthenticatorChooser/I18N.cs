@@ -1,4 +1,5 @@
 ﻿using AuthenticatorChooser.Resources;
+using System.Collections.Frozen;
 using System.Globalization;
 using Workshell.PE;
 using Workshell.PE.Resources;
@@ -17,7 +18,7 @@ public static class I18N {
 
     }
 
-    private static readonly IReadOnlyDictionary<Key, string?> RUNTIME_OS_FILE_STRINGS;
+    private static readonly FrozenDictionary<Key, IList<string>> STRINGS;
 
     static I18N() {
         StringTableResource.Register();
@@ -25,40 +26,26 @@ public static class I18N {
         string localizedFilesDir = Path.Combine(Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows", "System32", CultureInfo.CurrentUICulture.Name);
 
         IList<string?> fidoCredProvStrings = getPeFileStrings(Path.Combine(localizedFilesDir, "fidocredprov.dll.mui"), [
-            (15, 230),
-            (15, 231), // also appears in webauthn.dll.mui string table 4 entries 50 and 56
-            (15, 232)
+            (15, 230), // Security key
+            (15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
+            (15, 232)  // Windows
         ]);
 
         IList<string?> webauthnStrings = getPeFileStrings(Path.Combine(localizedFilesDir, "webauthn.dll.mui"), [
-            (4, 53) // entry 63 has the same value, not sure which one is used
+            (4, 53) // Sign In With Your Passkey title; entry 63 has the same value, not sure which one is used
         ]);
 
-        RUNTIME_OS_FILE_STRINGS = new Dictionary<Key, string?> {
-            [Key.SECURITY_KEY]              = fidoCredProvStrings[0],
-            [Key.SMARTPHONE]                = fidoCredProvStrings[1],
-            [Key.WINDOWS]                   = fidoCredProvStrings[2],
-            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = webauthnStrings[0]
-        }.AsReadOnly();
+        STRINGS = new Dictionary<Key, IList<string>> {
+            [Key.SECURITY_KEY]              = getUniqueNonNullStrings(Strings.securityKey, fidoCredProvStrings[0]),
+            [Key.SMARTPHONE]                = getUniqueNonNullStrings(Strings.smartphone, fidoCredProvStrings[1]),
+            [Key.WINDOWS]                   = getUniqueNonNullStrings(Strings.windows, fidoCredProvStrings[2]),
+            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getUniqueNonNullStrings(Strings.signInWithYourPasskey, webauthnStrings[0]),
+        }.ToFrozenDictionary();
+
+        static IList<string> getUniqueNonNullStrings(params string?[] strings) => strings.Compact().Distinct(StringComparer.CurrentCulture).ToList();
     }
 
-    private static string getStringCompileTime(Key key) => key switch {
-        Key.SECURITY_KEY              => Strings.securityKey,
-        Key.SMARTPHONE                => Strings.smartphone,
-        Key.WINDOWS                   => Strings.windows,
-        Key.SIGN_IN_WITH_YOUR_PASSKEY => Strings.signInWithYourPasskey,
-        _                             => throw new ArgumentOutOfRangeException(nameof(key), key, null)
-    };
-
-    private static string? getStringRuntime(Key key) => RUNTIME_OS_FILE_STRINGS.GetValueOrDefault(key);
-
-    public static IEnumerable<string> getStrings(Key key) {
-        yield return getStringCompileTime(key);
-
-        if (getStringRuntime(key) is { } runtimeString) {
-            yield return runtimeString;
-        }
-    }
+    public static IEnumerable<string> getStrings(Key key) => STRINGS[key];
 
     private static IList<string?> getPeFileStrings(string peFile, IList<(int stringTableId, int stringTableEntryId)> queries) {
         try {
@@ -82,7 +69,7 @@ public static class I18N {
             return results;
         } catch (FileNotFoundException) { } catch (DirectoryNotFoundException) { } catch (PortableExecutableImageException) { }
 
-        return [];
+        return Enumerable.Repeat<string?>(null, queries.Count).ToList();
     }
 
 }
