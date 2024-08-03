@@ -15,7 +15,7 @@ public static class SecurityKeyChooser {
             AutomationElement? outerScrollViewer = fidoEl.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.ClassNameProperty, "ScrollViewer"));
             AutomationElement? promptTitleEl = outerScrollViewer?.FindFirst(TreeScope.Children, new AndCondition(
                 new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock"),
-                new OrCondition(I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Select<string, Condition>(s => new PropertyCondition(AutomationElement.NameProperty, s)).ToArray())));
+                singleSafePropertyCondition(AutomationElement.NameProperty, I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY))));
 
             if (outerScrollViewer != null && promptTitleEl != null) {
                 List<AutomationElement> listItems = Retrier.Attempt(_ =>
@@ -36,13 +36,22 @@ public static class SecurityKeyChooser {
         }             // Otherwise not a credential prompt, wrong window class name
     }
 
+    // name/title are localized, so don't use those
+    // #4: unfortunately, this class name is shared with the UAC prompt, detectable when desktop dimming is disabled
+    public static bool isFidoPromptWindow(SystemWindow window) => window.ClassName == "Credential Dialog Xaml Host";
+
     private static bool nameContainsAny(AutomationElement element, IEnumerable<string?> suffices) {
         string name = element.Current.Name;
         return suffices.Any(suffix => suffix != null && name.Contains(suffix, StringComparison.CurrentCulture));
     }
 
-    // name/title are localized, so don't use those
-    // #4: unfortunately, this class name is shared with the UAC prompt, detectable when desktop dimming is disabled
-    public static bool isFidoPromptWindow(SystemWindow window) => window.ClassName == "Credential Dialog Xaml Host";
+    private static Condition singleSafePropertyCondition(AutomationProperty property, IEnumerable<string> allowedNames) {
+        Condition[] propertyConditions = allowedNames.Select<string, Condition>(allowedName => new PropertyCondition(property, allowedName)).ToArray();
+        return propertyConditions.Length switch {
+            0 => Condition.FalseCondition,
+            1 => propertyConditions[0],
+            _ => new OrCondition(propertyConditions)
+        };
+    }
 
 }
