@@ -5,12 +5,13 @@
 
 *Program that runs in the background to automatically skip the Windows "Sign in with your passkey" phone prompt and go straight to the USB security key option.*
 
-<!-- MarkdownTOC autolink="true" bracket="round" autoanchor="false" levels="1,2,3" -->
+<!-- MarkdownTOC autolink="true" bracket="round" autoanchor="false" levels="1,2" -->
 
 - [Problem](#problem)
 - [Solution](#solution)
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Demo](#demo)
 
 <!-- /MarkdownTOC -->
 
@@ -34,18 +35,21 @@ This is a background program that runs headlessly in your Windows user session. 
 
 <p align="center"><img src=".github/images/demo.gif" alt="demo" width="464" /></p>     
 
-This program does not interfere with local TPM passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides a USB security key and pairing a new Bluetooth smartphone, such as the cases when you already have a paired phone, or you previously declined a Windows Hello factor like a PIN but want to try a PIN again from the authenticator choice dialog. You can [edit the registry if you want to unpair an existing phone](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Unpairing-Bluetooth-smartphone).
+Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog box.
+
+### Overriding the automatic next behavior
+This program does not interfere with local TPM passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides a USB security key and pairing a new Bluetooth smartphone, such as the cases when you already have a paired phone, or you previously declined a Windows Hello factor like a PIN but want to try a PIN again from the authenticator choice dialog. [You can edit the registry if you want to unpair an existing phone](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Unpairing-Bluetooth-smartphone).
 
 If this program skips the authenticator choice dialog when you don't want it to, for example, if you want to use a smartphone Bluetooth passkey only once or infrequently, you can hold <kbd>Shift</kbd> when the dialog appears to temporarily suppress this program from automatically submitting the security key choice once.
 
-Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog box.
+Even if this program doesn't click the Next button (because an extra choice was present, or you were holding <kbd>Shift</kbd>), it will still highlight the Security Key option and focus the Next button for you, so you can just press <kbd>Enter</kbd> or <kbd>Space</kbd> to choose the Security Key anyway.
 
 ## Requirements
 
 - Windows 11 23H2 or later, or Windows 11 22H2 with Moment 4 (KB5031455 or KB5030310)
-    - It can also run on earlier versions, such as Windows 11 21H2 and Windows 10, although it won't do anything there because those versions can't pair and exchange passkeys with phones in the first place.
+    - It can also run on earlier versions, such as Windows 11 21H2 and Windows 10, although it won't do anything there because those versions can't pair and exchange passkeys with phones in the first place, so there's nothing to fix.
 - [.NET Desktop Runtime 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) or later
-    - This program is compatible with x64 and ARM64 CPU architectures
+    - This program is compatible with x64 and ARM64 CPU architectures.
 
 ## Installation
 
@@ -53,7 +57,11 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
 1. Extract the `AuthenticatorChooser.exe` file from the ZIP archive to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
-1. Register the program to run automatically on user logon with one of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2.
+1. Register the program to run automatically on user logon with any **one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2.
+    - Run this program with the `--autostart-on-logon` argument
+        ```ps1
+        .\AuthenticatorChooser --autostart-on-logon
+        ```
     - Import a `.reg` file
         ```reg
         Windows Registry Editor Version 5.00
@@ -70,3 +78,6 @@ Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.
         Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name AuthenticatorChooser -Value """C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"""
         ```
     - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`.
+
+## Demo
+To test with a sample FIDO authentication prompt, visit [WebAuthn.io](https://webauthn.io) and click the **Authenticate** button.
