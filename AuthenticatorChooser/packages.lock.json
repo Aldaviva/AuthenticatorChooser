@@ -2,6 +2,15 @@
   "version": 1,
   "dependencies": {
     "net8.0-windows7.0": {
+      "McMaster.Extensions.CommandLineUtils": {
+        "type": "Direct",
+        "requested": "[4.1.1, )",
+        "resolved": "4.1.1",
+        "contentHash": "zxgDY+G5yVq2q8sVB3Z275Qkxed1jC95nwAfnlSyoG4l5Nicvd4+ke1jXusEZEfyuErlAgXCKS937c13FmZWBg==",
+        "dependencies": {
+          "System.ComponentModel.Annotations": "5.0.0"
+        }
+      },
       "mwinapi": {
         "type": "Direct",
         "requested": "[0.3.0.5, )",
@@ -9,6 +18,21 @@
         "contentHash": "jb1ox29TMcxe0klNF5yui+ehXHUdEZOuykYaoGI9Okt0s7K5bNWxOzqsng0VVVvvFnW9wNfS4hWYOsE9Xup0GQ==",
         "dependencies": {
           "System.Management": "6.0.0"
+        }
+      },
+      "NLog": {
+        "type": "Direct",
+        "requested": "[5.3.4, )",
+        "resolved": "5.3.4",
+        "contentHash": "gLy7+O1hEYJXIlcTr1/VWjGXrZTQFZzYNO18IWasD64pNwz0BreV+nHLxWKXWZzERRzoKnsk2XYtwLkTVk7J1A=="
+      },
+      "System.Management": {
+        "type": "Direct",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "jrK22i5LRzxZCfGb+tGmke2VH7oE0DvcDlJ1HAKYU8cPmD8XnpUT0bYn2Gy98GEhGjtfbR/sxKTVb+dE770pfA==",
+        "dependencies": {
+          "System.CodeDom": "8.0.0"
         }
       },
       "ThrottleDebounce": {
@@ -34,8 +58,13 @@
       },
       "System.CodeDom": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA=="
+        "resolved": "8.0.0",
+        "contentHash": "WTlRjL6KWIMr/pAaq3rYqh0TJlzpouaQ/W1eelssHgtlwHAH25jXTkUphTYx9HaIIf7XA6qs/0+YhtLEQRkJ+Q=="
+      },
+      "System.ComponentModel.Annotations": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "dMkqfy2el8A8/I76n2Hi1oBFEbG1SfxD2l5nhwXV3XjlnOmwxJlQbYpJH4W51odnU9sARCSAgv7S3CyAFMkpYg=="
       },
       "System.Drawing.Common": {
         "type": "Transitive",
@@ -43,14 +72,6 @@
         "contentHash": "KIX+oBU38pxkKPxvLcLfIkOV5Ien8ReN78wro7OF5/erwcmortzeFx+iBswlh2Vz6gVne0khocQudGwaO1Ey6A==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "7.0.0"
-        }
-      },
-      "System.Management": {
-        "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "sHsESYMmPDhQuOC66h6AEOs/XowzKsbT9srMbX71TCXP58hkpn1BqBjdmKj1+DCA/WlBETX1K5WjQHwmV0Txrg==",
-        "dependencies": {
-          "System.CodeDom": "6.0.0"
         }
       },
       "Workshell.PE": {
@@ -60,6 +81,15 @@
       }
     },
     "net8.0-windows7.0/win-arm64": {
+      "System.Management": {
+        "type": "Direct",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "jrK22i5LRzxZCfGb+tGmke2VH7oE0DvcDlJ1HAKYU8cPmD8XnpUT0bYn2Gy98GEhGjtfbR/sxKTVb+dE770pfA==",
+        "dependencies": {
+          "System.CodeDom": "8.0.0"
+        }
+      },
       "Microsoft.Win32.SystemEvents": {
         "type": "Transitive",
         "resolved": "7.0.0",
@@ -71,18 +101,19 @@
         "contentHash": "KIX+oBU38pxkKPxvLcLfIkOV5Ien8ReN78wro7OF5/erwcmortzeFx+iBswlh2Vz6gVne0khocQudGwaO1Ey6A==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "7.0.0"
-        }
-      },
-      "System.Management": {
-        "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "sHsESYMmPDhQuOC66h6AEOs/XowzKsbT9srMbX71TCXP58hkpn1BqBjdmKj1+DCA/WlBETX1K5WjQHwmV0Txrg==",
-        "dependencies": {
-          "System.CodeDom": "6.0.0"
         }
       }
     },
     "net8.0-windows7.0/win-x64": {
+      "System.Management": {
+        "type": "Direct",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "jrK22i5LRzxZCfGb+tGmke2VH7oE0DvcDlJ1HAKYU8cPmD8XnpUT0bYn2Gy98GEhGjtfbR/sxKTVb+dE770pfA==",
+        "dependencies": {
+          "System.CodeDom": "8.0.0"
+        }
+      },
       "Microsoft.Win32.SystemEvents": {
         "type": "Transitive",
         "resolved": "7.0.0",
@@ -94,14 +125,6 @@
         "contentHash": "KIX+oBU38pxkKPxvLcLfIkOV5Ien8ReN78wro7OF5/erwcmortzeFx+iBswlh2Vz6gVne0khocQudGwaO1Ey6A==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "7.0.0"
-        }
-      },
-      "System.Management": {
-        "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "sHsESYMmPDhQuOC66h6AEOs/XowzKsbT9srMbX71TCXP58hkpn1BqBjdmKj1+DCA/WlBETX1K5WjQHwmV0Txrg==",
-        "dependencies": {
-          "System.CodeDom": "6.0.0"
         }
       }
     }

@@ -1,4 +1,5 @@
 ﻿using AuthenticatorChooser.Resources;
+using Microsoft.Win32;
 using System.Collections.Frozen;
 using System.Globalization;
 using Workshell.PE;
@@ -23,15 +24,17 @@ public static class I18N {
     static I18N() {
         StringTableResource.Register();
 
-        string localizedFilesDir = Path.Combine(Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows", "System32", CultureInfo.CurrentUICulture.Name);
+        string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows";
 
-        IList<string?> fidoCredProvStrings = getPeFileStrings(Path.Combine(localizedFilesDir, "fidocredprov.dll.mui"), [
+        // #2: CredentialUIBroker.exe runs as the current user
+        IList<string?> fidoCredProvStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", getUserLocaleId(true), "fidocredprov.dll.mui"), [
             (15, 230), // Security key
             (15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
             (15, 232)  // Windows
         ]);
 
-        IList<string?> webauthnStrings = getPeFileStrings(Path.Combine(localizedFilesDir, "webauthn.dll.mui"), [
+        // #2: CryptSvc runs as NETWORK SERVICE
+        IList<string?> webauthnStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", getUserLocaleId(false), "webauthn.dll.mui"), [
             (4, 53) // Sign In With Your Passkey title; entry 63 has the same value, not sure which one is used
         ]);
 
@@ -51,14 +54,14 @@ public static class I18N {
         try {
             using PortableExecutableImage file = PortableExecutableImage.FromFile(peFile);
 
-            IDictionary<int, StringTable?> stringTableCache = new Dictionary<int, StringTable?>();
+            IDictionary<int, StringTable?> stringTableCache = new Dictionary<int, StringTable?>(queries.Count);
             ResourceType?                  stringTables     = ResourceCollection.Get(file).FirstOrDefault(type => type.Id == ResourceType.String);
             IList<string?>                 results          = new List<string?>(queries.Count);
 
             foreach ((int stringTableId, int stringTableEntryId) in queries) {
                 if (!stringTableCache.TryGetValue(stringTableId, out StringTable? stringTable)) {
                     StringTableResource? stringTableResource = stringTables?.FirstOrDefault(resource => resource.Id == stringTableId) as StringTableResource;
-                    stringTable = stringTableResource?.GetTable(stringTableResource.Languages[0]);
+                    stringTable = stringTableResource?.GetTable(stringTableResource.Languages[0]); // #2: use the table's language, not always English
 
                     stringTableCache[stringTableId] = stringTable;
                 }
@@ -71,5 +74,14 @@ public static class I18N {
 
         return Enumerable.Repeat<string?>(null, queries.Count).ToList();
     }
+
+    /// <summary>
+    /// Get the current locale tag of the user or computer.
+    /// </summary>
+    /// <param name="currentUser"><c>true</c> to get the current user's locale, or <c>false</c> to get the locale of the system — specifically, the <c>NETWORK SERVICE</c> user</param>
+    /// <returns>locale name, such as <c>en-US</c></returns>
+    public static string getUserLocaleId(bool currentUser) => currentUser
+        ? CultureInfo.CurrentUICulture.Name
+        : (string) (Registry.GetValue(@"HKEY_USERS\S-1-5-20\Control Panel\International", "LocaleName", null) ?? string.Empty);
 
 }

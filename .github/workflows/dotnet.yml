@@ -36,4 +36,5 @@ jobs:
       with:
         name: ${{ env.ProjectName }}-${{ matrix.targetPlatform }}
         path: ${{ env.ProjectName }}/bin/Release/net8.0-windows/${{ matrix.targetPlatform }}/publish/*.exe
+        path: ${{ env.ProjectName }}/bin/Release/net8.0-windows/${{ matrix.targetPlatform }}/publish/*.pdb
         if-no-files-found: error
