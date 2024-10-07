@@ -23,6 +23,7 @@ public static partial class I18N {
 
     public static string userLocaleName { get; } = CultureInfo.CurrentUICulture.Name;
     public static string systemLocaleName { get; } = getCurrentSystemLocaleName();
+    private static CultureInfo systemCulture { get; } = CultureInfo.GetCultureInfo(systemLocaleName);
 
     private static readonly FrozenDictionary<Key, IList<string>> STRINGS;
     private static readonly StringComparer                       STRING_COMPARER = StringComparer.CurrentCulture;
@@ -44,10 +45,11 @@ public static partial class I18N {
         ]);
 
         STRINGS = new Dictionary<Key, IList<string>> {
-            [Key.SECURITY_KEY]              = getUniqueNonNullStrings(Strings.securityKey, fidoCredProvStrings[0]),
-            [Key.SMARTPHONE]                = getUniqueNonNullStrings(Strings.smartphone, fidoCredProvStrings[1]),
-            [Key.WINDOWS]                   = getUniqueNonNullStrings(Strings.windows, fidoCredProvStrings[2]),
-            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getUniqueNonNullStrings(Strings.signInWithYourPasskey, webauthnStrings[0]),
+            [Key.SECURITY_KEY] = getUniqueNonNullStrings(Strings.securityKey, fidoCredProvStrings[0]),
+            [Key.SMARTPHONE]   = getUniqueNonNullStrings(Strings.smartphone, fidoCredProvStrings[1]),
+            [Key.WINDOWS]      = getUniqueNonNullStrings(Strings.windows, fidoCredProvStrings[2]),
+            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getUniqueNonNullStrings(Strings.ResourceManager.GetString(nameof(Strings.signInWithYourPasskey), systemCulture),
+                webauthnStrings[0]),
         }.ToFrozenDictionary();
 
         static IList<string> getUniqueNonNullStrings(params string?[] strings) => strings.Compact().Distinct(STRING_COMPARER).ToList();
