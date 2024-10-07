@@ -1,14 +1,14 @@
 ﻿using AuthenticatorChooser.Resources;
-using Microsoft.Win32;
 using System.Collections.Frozen;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Workshell.PE;
 using Workshell.PE.Resources;
 using Workshell.PE.Resources.Strings;
 
 namespace AuthenticatorChooser;
 
-public static class I18N {
+public static partial class I18N {
 
     public enum Key {
 
@@ -19,22 +19,27 @@ public static class I18N {
 
     }
 
+    private const uint MUI_LANGUAGE_NAME = 8;
+
+    public static string userLocaleName { get; } = CultureInfo.CurrentUICulture.Name;
+    public static string systemLocaleName { get; } = getCurrentSystemLocaleName();
+
     private static readonly FrozenDictionary<Key, IList<string>> STRINGS;
+    private static readonly StringComparer                       STRING_COMPARER = StringComparer.CurrentCulture;
 
     static I18N() {
         StringTableResource.Register();
 
         string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows";
-
         // #2: CredentialUIBroker.exe runs as the current user
-        IList<string?> fidoCredProvStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", getUserLocaleId(true), "fidocredprov.dll.mui"), [
+        IList<string?> fidoCredProvStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", userLocaleName, "fidocredprov.dll.mui"), [
             (15, 230), // Security key
             (15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
             (15, 232)  // Windows
         ]);
 
         // #2: CryptSvc runs as NETWORK SERVICE
-        IList<string?> webauthnStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", getUserLocaleId(false), "webauthn.dll.mui"), [
+        IList<string?> webauthnStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", systemLocaleName, "webauthn.dll.mui"), [
             (4, 53) // Sign In With Your Passkey title; entry 63 has the same value, not sure which one is used
         ]);
 
@@ -45,7 +50,7 @@ public static class I18N {
             [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getUniqueNonNullStrings(Strings.signInWithYourPasskey, webauthnStrings[0]),
         }.ToFrozenDictionary();
 
-        static IList<string> getUniqueNonNullStrings(params string?[] strings) => strings.Compact().Distinct(StringComparer.CurrentCulture).ToList();
+        static IList<string> getUniqueNonNullStrings(params string?[] strings) => strings.Compact().Distinct(STRING_COMPARER).ToList();
     }
 
     public static IEnumerable<string> getStrings(Key key) => STRINGS[key];
@@ -75,13 +80,23 @@ public static class I18N {
         return Enumerable.Repeat<string?>(null, queries.Count).ToList();
     }
 
+    private static unsafe string getCurrentSystemLocaleName() {
+        int bufferSize = 0;
+        getSystemPreferredUILanguages(MUI_LANGUAGE_NAME, out _, null, ref bufferSize);
+        char[] buffer = new char[bufferSize];
+        fixed (char* bufferStart = &buffer[0]) {
+            getSystemPreferredUILanguages(MUI_LANGUAGE_NAME, out _, bufferStart, ref bufferSize);
+        }
+        var results = new ReadOnlySpan<char>(buffer, 0, bufferSize);
+        return new string(results[..results.IndexOf('\0')]); // only return the first language name, even if buffer contains more than one (null-delimited)
+    }
+
     /// <summary>
-    /// Get the current locale tag of the user or computer.
+    /// <para><see href="https://learn.microsoft.com/en-us/windows/win32/intl/user-interface-language-management#system-ui-language"/></para>
+    /// <para><see href="https://learn.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getsystempreferreduilanguages"/></para>
     /// </summary>
-    /// <param name="currentUser"><c>true</c> to get the current user's locale, or <c>false</c> to get the locale of the system — specifically, the <c>NETWORK SERVICE</c> user</param>
-    /// <returns>locale name, such as <c>en-US</c></returns>
-    public static string getUserLocaleId(bool currentUser) => currentUser
-        ? CultureInfo.CurrentUICulture.Name
-        : (string) (Registry.GetValue(@"HKEY_USERS\S-1-5-20\Control Panel\International", "LocaleName", null) ?? string.Empty);
+    [LibraryImport("Kernel32.dll", EntryPoint = "GetSystemPreferredUILanguages", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static unsafe partial bool getSystemPreferredUILanguages(uint flags, out uint languageCount, char* resultBuffer, ref int resultBufferLength);
 
 }

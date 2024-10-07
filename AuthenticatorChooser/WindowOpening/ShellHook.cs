@@ -9,15 +9,17 @@ public interface ShellHook: IDisposable {
 
 }
 
-public class ShellHookImpl: Form, ShellHook {
+public partial class ShellHookImpl: Form, ShellHook {
+
+    private const string USER32 = "user32.dll";
 
     public event EventHandler<ShellEventArgs>? shellEvent;
 
     private readonly uint subscriptionId;
 
     public ShellHookImpl() {
-        subscriptionId = RegisterWindowMessage("SHELLHOOK");
-        RegisterShellHookWindow(Handle);
+        subscriptionId = registerWindowMessage("SHELLHOOK");
+        registerShellHookWindow(Handle);
     }
 
     protected override void WndProc(ref Message message) {
@@ -29,18 +31,20 @@ public class ShellHookImpl: Form, ShellHook {
     }
 
     protected override void Dispose(bool disposing) {
-        DeregisterShellHookWindow(Handle);
+        deregisterShellHookWindow(Handle);
         base.Dispose(disposing);
     }
 
-    [DllImport("user32.dll", EntryPoint = "RegisterWindowMessageW", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern uint RegisterWindowMessage(string lpString);
+    [LibraryImport(USER32, EntryPoint = "RegisterWindowMessageW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    private static partial uint registerWindowMessage(string lpString);
 
-    [DllImport("user32.dll")]
-    private static extern bool DeregisterShellHookWindow(IntPtr hWnd);
+    [LibraryImport(USER32, EntryPoint = "DeregisterShellHookWindow")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool deregisterShellHookWindow(IntPtr hWnd);
 
-    [DllImport("user32.dll")]
-    private static extern bool RegisterShellHookWindow(IntPtr hWnd);
+    [LibraryImport(USER32, EntryPoint = "RegisterShellHookWindow")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool registerShellHookWindow(IntPtr hWnd);
 
 }
 

@@ -18,6 +18,8 @@ public class Startup {
 
     private const string PROGRAM_NAME = nameof(AuthenticatorChooser);
 
+    private static readonly string PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
+
     private static Logger? logger;
 
     [Option(DefaultHelpOptionConvention.DefaultHelpTemplate, CommandOptionType.NoValue)]
@@ -49,9 +51,10 @@ public class Startup {
                 using Mutex singleInstanceLock = new(true, $@"Local\{PROGRAM_NAME}_{WindowsIdentity.GetCurrent().User?.Value}", out bool isOnlyInstance);
                 if (!isOnlyInstance) return 2;
                 try {
-                    logger.Info("Locale is {userCulture} (user), {systemCulture} (system)", I18N.getUserLocaleId(true), I18N.getUserLocaleId(false));
-                    (string? name, Version? version, string? arch) os = getOsVersion();
-                    logger.Info("Operating system is {name} {version} {arch}", os.name, os.version, os.arch);
+                    logger.Info("{name} {version} starting", PROGRAM_NAME, PROGRAM_VERSION);
+                    (string name, string marketingVersion, Version version, string arch) os = getOsVersion();
+                    logger.Info("Operating system is {name} {marketingVersion} {version} {arch}", os.name, os.marketingVersion, os.version, os.arch);
+                    logger.Info("Locales are {userLocale} (user) and {systemLocale} (system)", I18N.userLocaleName, I18N.systemLocaleName);
 
                     using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
                     windowOpeningListener.windowOpened += (_, window) => SecurityKeyChooser.chooseUsbSecurityKey(window);
@@ -61,6 +64,11 @@ public class Startup {
                     }
 
                     _ = I18N.getStrings(I18N.Key.SMARTPHONE); // ensure localization is loaded eagerly
+
+                    Console.CancelKeyPress += (_, args) => {
+                        args.Cancel = true;
+                        Application.Exit();
+                    };
 
                     logger.Info("Waiting for Windows Security dialog boxes to open");
                     Application.Run();
@@ -81,7 +89,6 @@ public class Startup {
 
     private static void showUsage() {
         string processFilename = Path.GetFileName(Environment.ProcessPath)!;
-        string version         = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
         MessageBox.Show(
             $"""
              {processFilename}
@@ -98,16 +105,19 @@ public class Startup {
                  
              For more information, see https://github.com/Aldaviva/{PROGRAM_NAME}
              Press Ctrl+C to copy this message
-             """, $"{PROGRAM_NAME} {version} usage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+             """, $"{PROGRAM_NAME} {PROGRAM_VERSION} usage", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
-    private static (string name, Version version, string architecture) getOsVersion() {
+    private static (string name, string marketingVersion, Version version, string architecture) getOsVersion() {
+        const string NT_CURRENTVERSION_KEY = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion";
+
         using ManagementObjectSearcher   wmiSearch  = new(new SelectQuery("Win32_OperatingSystem", null, ["Caption", "Version"]));
         using ManagementObjectCollection wmiResults = wmiSearch.Get();
         using ManagementObject           wmiResult  = wmiResults.Cast<ManagementObject>().First();
 
         return (name: (string) wmiResult["Caption"],
-                version: Version.Parse($"{wmiResult["Version"]}.{Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion", "UBR", 0) as int? ?? 0}"),
+                marketingVersion: Registry.GetValue(NT_CURRENTVERSION_KEY, "DisplayVersion", null) as string ?? string.Empty,
+                version: Version.Parse($"{wmiResult["Version"]}.{Registry.GetValue(NT_CURRENTVERSION_KEY, "UBR", 0) as int? ?? 0}"),
                 architecture: Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE") ?? string.Empty);
     }
 
