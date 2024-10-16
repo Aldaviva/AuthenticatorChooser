@@ -58,7 +58,7 @@ Even if this program doesn't click the Next button (because an extra choice was 
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
 1. Register the program to run automatically on user logon with any **one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2.
-    - Run this program with the `--autostart-on-logon` argument
+    - Run this program once with the `--autostart-on-logon` argument
         ```ps1
         .\AuthenticatorChooser --autostart-on-logon
         ```
