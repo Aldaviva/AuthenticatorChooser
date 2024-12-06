@@ -1,5 +1,6 @@
 using ManagedWinapi.Windows;
 using NLog;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Automation;
 using System.Windows.Input;
@@ -38,10 +39,21 @@ public static class SecurityKeyChooser {
 
             Condition           credentialsListIdCondition    = new PropertyCondition(AutomationElement.AutomationIdProperty, "CredentialsList");
             IEnumerable<string> securityKeyLabelPossibilities = I18N.getStrings(I18N.Key.SECURITY_KEY);
-            ICollection<AutomationElement> authenticatorChoices = Retrier.Attempt(_ =>
-                    outerScrollViewer.FindFirst(TreeScope.Children, credentialsListIdCondition).children().ToList(),
-                maxAttempts: 18, // #5: ~5 sec
-                delay: attempt => TimeSpan.FromMilliseconds(Math.Min(500, 1 << attempt)));
+
+            Stopwatch                      authenticatorChoicesStopwatch = Stopwatch.StartNew();
+            ICollection<AutomationElement> authenticatorChoices;
+            try {
+                authenticatorChoices = Retrier.Attempt(_ =>
+                        outerScrollViewer.FindFirst(TreeScope.Children, credentialsListIdCondition).children().ToList(),
+                    maxAttempts: 124,                                                        // #5, #11: ~60 sec
+                    delay: attempt => TimeSpan.FromMilliseconds(1 << Math.Min(attempt, 9))); // #11: power series backoff, max=512 ms
+                LOGGER.Trace("Found authenticator choices after {0:N3} sec", authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
+            } catch (Exception e) when (e is not OutOfMemoryException) {
+                LOGGER.Error(e, "Could not find authenticator choices after retrying for {0:N3} sec due to the following exception. Giving up and not automatically selecting Security Key.",
+                    authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
+                return;
+            }
+
             AutomationElement? securityKeyChoice = authenticatorChoices.FirstOrDefault(choice => nameContainsAny(choice, securityKeyLabelPossibilities));
             if (securityKeyChoice == null) {
                 LOGGER.Debug("USB security key is not a choice, skipping");
@@ -72,8 +84,6 @@ public static class SecurityKeyChooser {
 
     // Window name and title are localized, so don't match against those
     public static bool isFidoPromptWindow(SystemWindow window) => window.ClassName == WINDOW_CLASS_NAME;
-
-    // private static bool isAltTabWindow(SystemWindow window) => window.ClassName == ALT_TAB_CLASS_NAME;
 
     private static bool nameContainsAny(AutomationElement element, IEnumerable<string?> possibleSubstrings) {
         string name = element.Current.Name;

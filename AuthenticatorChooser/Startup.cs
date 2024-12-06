@@ -34,6 +34,7 @@ public class Startup {
     [STAThread]
     public static int Main(string[] args) => CommandLineApplication.Execute<Startup>(args);
 
+    // ReSharper disable once UnusedMember.Global - it's actually invoked by McMaster.Extensions.CommandLineUtils
     public int OnExecute() {
         Application.SetCompatibleTextRenderingDefault(false);
         Application.EnableVisualStyles();
@@ -92,19 +93,19 @@ public class Startup {
         MessageBox.Show(
             $"""
              {processFilename}
-                 Runs this program in the background, waiting for FIDO credentials dialog boxes to open and choosing the Security Key option each time.
+                 Runs this program in the background, waiting for FIDO credential dialog boxes to open and choosing the Security Key option each time.
                
              {processFilename} --autostart-on-logon
                  Registers this program to start automatically every time the current user logs on to Windows.
                  
              {processFilename} --log[=filename]
-                 Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify a filename, it goes to %TEMP%\{PROGRAM_NAME}.log.
+                 Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify a filename, it goes to {Path.Combine(Environment.GetEnvironmentVariable("TEMP") ?? "%TEMP%", PROGRAM_NAME + ".log")}.
                
              {processFilename} --help
                  Shows usage.
                  
-             For more information, see https://github.com/Aldaviva/{PROGRAM_NAME}
-             Press Ctrl+C to copy this message
+             For more information, see https://github.com/Aldaviva/{PROGRAM_NAME}.
+             Press Ctrl+C to copy this message.
              """, $"{PROGRAM_NAME} {PROGRAM_VERSION} usage", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
