@@ -21,7 +21,8 @@ public static partial class I18N {
 
     private const uint MUI_LANGUAGE_NAME = 8;
 
-    public static string userLocaleName { get; } = CultureInfo.CurrentUICulture.Name;
+    public static string userLocaleName { get; } = CultureInfo.CurrentCulture.Name;
+    public static string userUiLocaleName { get; } = CultureInfo.CurrentUICulture.Name;
     public static string systemLocaleName { get; } = getCurrentSystemLocaleName();
     private static CultureInfo systemCulture { get; } = CultureInfo.GetCultureInfo(systemLocaleName);
 
@@ -32,12 +33,17 @@ public static partial class I18N {
         StringTableResource.Register();
 
         string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows";
-        // #2: CredentialUIBroker.exe runs as the current user
-        IList<string?> fidoCredProvStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", userLocaleName, "fidocredprov.dll.mui"), [
+        IList<(int stringTableId, int stringTableEntryId)> queries = [
             (15, 230), // Security key
             (15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
             (15, 232)  // Windows
-        ]);
+        ];
+
+        // #2: CredentialUIBroker.exe runs as the current user
+        IList<string?> fidoCredProvStringsUiLocale = getPeFileStrings(Path.Combine(systemRoot, "System32", userUiLocaleName, "fidocredprov.dll.mui"), queries);
+
+        // User might have configured a second locale
+        IList<string?> fidoCredProvStringsLocale = getPeFileStrings(Path.Combine(systemRoot, "System32", userLocaleName, "fidocredprov.dll.mui"), queries);
 
         // #2: CryptSvc runs as NETWORK SERVICE
         IList<string?> webauthnStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", systemLocaleName, "webauthn.dll.mui"), [
@@ -45,9 +51,9 @@ public static partial class I18N {
         ]);
 
         STRINGS = new Dictionary<Key, IList<string>> {
-            [Key.SECURITY_KEY] = getUniqueNonNullStrings(Strings.securityKey, fidoCredProvStrings[0]),
-            [Key.SMARTPHONE]   = getUniqueNonNullStrings(Strings.smartphone, fidoCredProvStrings[1]),
-            [Key.WINDOWS]      = getUniqueNonNullStrings(Strings.windows, fidoCredProvStrings[2]),
+            [Key.SECURITY_KEY] = getUniqueNonNullStrings(Strings.securityKey, fidoCredProvStringsUiLocale[0], fidoCredProvStringsLocale[0]),
+            [Key.SMARTPHONE]   = getUniqueNonNullStrings(Strings.smartphone, fidoCredProvStringsUiLocale[1], fidoCredProvStringsLocale[1]),
+            [Key.WINDOWS]      = getUniqueNonNullStrings(Strings.windows, fidoCredProvStringsUiLocale[2], fidoCredProvStringsLocale[2]),
             [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getUniqueNonNullStrings(Strings.ResourceManager.GetString(nameof(Strings.signInWithYourPasskey), systemCulture),
                 webauthnStrings[0]),
         }.ToFrozenDictionary();
