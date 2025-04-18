@@ -55,7 +55,7 @@ public class Startup {
                     logger.Info("{name} {version} starting", PROGRAM_NAME, PROGRAM_VERSION);
                     (string name, string marketingVersion, Version version, string arch) os = getOsVersion();
                     logger.Info("Operating system is {name} {marketingVersion} {version} {arch}", os.name, os.marketingVersion, os.version, os.arch);
-                    logger.Info("Locales are {userLocale} (user) and {systemLocale} (system)", I18N.userLocaleName, I18N.systemLocaleName);
+                    logger.Info("Locales are {userUiLocale} (user UI), {userLocale} (user) and {systemLocale} (system)", I18N.userUiLocaleName, I18N.userLocaleName, I18N.systemLocaleName);
 
                     using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
                     windowOpeningListener.windowOpened += (_, window) => SecurityKeyChooser.chooseUsbSecurityKey(window);
