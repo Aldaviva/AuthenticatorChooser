@@ -19,78 +19,88 @@ public static partial class I18N {
 
     }
 
-    private const uint MUI_LANGUAGE_NAME = 8;
+    public static readonly IReadOnlyList<string> LOCALE_NAMES = ((List<string>) [CultureInfo.CurrentCulture.Name, CultureInfo.CurrentUICulture.Name]).Concat(getCurrentSystemLocaleNames()).Distinct()
+        .ToList();
 
-    public static string userLocaleName { get; } = CultureInfo.CurrentUICulture.Name;
-    public static string systemLocaleName { get; } = getCurrentSystemLocaleName();
-    private static CultureInfo systemCulture { get; } = CultureInfo.GetCultureInfo(systemLocaleName);
-
-    private static readonly FrozenDictionary<Key, IList<string>> STRINGS;
-    private static readonly StringComparer                       STRING_COMPARER = StringComparer.CurrentCulture;
+    private static readonly FrozenDictionary<Key, IList<string>>          STRINGS;
+    private static readonly StringComparer                                STRING_COMPARER    = StringComparer.CurrentCulture;
+    private static readonly IDictionary<string, PortableExecutableImage?> DLL_CACHE          = new Dictionary<string, PortableExecutableImage?>();
+    private static readonly IDictionary<(string, int), StringTable?>      STRING_TABLE_CACHE = new Dictionary<(string, int), StringTable?>();
 
     static I18N() {
         StringTableResource.Register();
-
         string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows";
-        // #2: CredentialUIBroker.exe runs as the current user
-        IList<string?> fidoCredProvStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", userLocaleName, "fidocredprov.dll.mui"), [
-            (15, 230), // Security key
-            (15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
-            (15, 232)  // Windows
-        ]);
-
-        // #2: CryptSvc runs as NETWORK SERVICE
-        IList<string?> webauthnStrings = getPeFileStrings(Path.Combine(systemRoot, "System32", systemLocaleName, "webauthn.dll.mui"), [
-            (4, 53) // Sign In With Your Passkey title; entry 63 has the same value, not sure which one is used
-        ]);
 
         STRINGS = new Dictionary<Key, IList<string>> {
-            [Key.SECURITY_KEY] = getUniqueNonNullStrings(Strings.securityKey, fidoCredProvStrings[0]),
-            [Key.SMARTPHONE]   = getUniqueNonNullStrings(Strings.smartphone, fidoCredProvStrings[1]),
-            [Key.WINDOWS]      = getUniqueNonNullStrings(Strings.windows, fidoCredProvStrings[2]),
-            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getUniqueNonNullStrings(Strings.ResourceManager.GetString(nameof(Strings.signInWithYourPasskey), systemCulture),
-                webauthnStrings[0]),
+            [Key.SECURITY_KEY]              = getStrings(nameof(Strings.securityKey), fidoCredProvMuiPath, 15, 230),    // Security key
+            [Key.SMARTPHONE]                = getStrings(nameof(Strings.smartphone), fidoCredProvMuiPath, 15, 231),     // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
+            [Key.WINDOWS]                   = getStrings(nameof(Strings.windows), fidoCredProvMuiPath, 15, 232),        // Windows
+            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(Strings.signInWithYourPasskey), webAuthnMuiPath, 4, 53) // Sign In With Your Passkey title; entry 63 has the same value
         }.ToFrozenDictionary();
 
-        static IList<string> getUniqueNonNullStrings(params string?[] strings) => strings.Compact().Distinct(STRING_COMPARER).ToList();
+        foreach (PortableExecutableImage? dllFile in DLL_CACHE.Values) {
+            dllFile?.Dispose();
+        }
+
+        STRING_TABLE_CACHE.Clear();
+        DLL_CACHE.Clear();
+
+        string fidoCredProvMuiPath(string locale) => Path.Combine(systemRoot, "System32", locale, "fidocredprov.dll.mui");
+        string webAuthnMuiPath(string locale) => Path.Combine(systemRoot, "System32", locale, "webauthn.dll.mui");
     }
 
     public static IEnumerable<string> getStrings(Key key) => STRINGS[key];
 
-    private static IList<string?> getPeFileStrings(string peFile, IList<(int stringTableId, int stringTableEntryId)> queries) {
+    // #18: The most-preferred language pack can be missing MUI files if it was installed after Windows, so always fall back to all other preferred languages
+    private static IList<string> getStrings(string compiledResourceName, Func<string, string> libraryPath, int stringTableId, int stringTableEntryId) =>
+        LOCALE_NAMES.SelectMany(locale => (List<string?>) [
+            Strings.ResourceManager.GetString(compiledResourceName, CultureInfo.GetCultureInfo(locale)),
+            getPeFileString(libraryPath(locale), stringTableId, stringTableEntryId)
+        ]).Compact().Distinct(STRING_COMPARER).ToList();
+
+    private static string? getPeFileString(string peFile, int stringTableId, int stringTableEntryId) {
         try {
-            using PortableExecutableImage file = PortableExecutableImage.FromFile(peFile);
-
-            IDictionary<int, StringTable?> stringTableCache = new Dictionary<int, StringTable?>(queries.Count);
-            ResourceType?                  stringTables     = ResourceCollection.Get(file).FirstOrDefault(type => type.Id == ResourceType.String);
-            IList<string?>                 results          = new List<string?>(queries.Count);
-
-            foreach ((int stringTableId, int stringTableEntryId) in queries) {
-                if (!stringTableCache.TryGetValue(stringTableId, out StringTable? stringTable)) {
-                    StringTableResource? stringTableResource = stringTables?.FirstOrDefault(resource => resource.Id == stringTableId) as StringTableResource;
-                    stringTable = stringTableResource?.GetTable(stringTableResource.Languages[0]); // #2: use the table's language, not always English
-
-                    stringTableCache[stringTableId] = stringTable;
+            if (!STRING_TABLE_CACHE.TryGetValue((peFile, stringTableId), out StringTable? stringTable)) {
+                if (!DLL_CACHE.TryGetValue(peFile, out PortableExecutableImage? file)) {
+                    try {
+                        file = PortableExecutableImage.FromFile(peFile);
+                    } catch (FileNotFoundException) { } catch (DirectoryNotFoundException) { }
+                    DLL_CACHE.Add(peFile, file);
                 }
 
-                results.Add(stringTable?.FirstOrDefault(entry => entry.Id == stringTableEntryId)?.Value);
+                if (file != null) {
+                    ResourceType?        stringTables        = ResourceCollection.Get(file).FirstOrDefault(type => type.Id == ResourceType.String);
+                    StringTableResource? stringTableResource = stringTables?.FirstOrDefault(resource => resource.Id == stringTableId) as StringTableResource;
+                    stringTable = stringTableResource?.GetTable(stringTableResource.Languages[0]); // #2: use the table's language, not always English
+                }
+
+                STRING_TABLE_CACHE.Add((peFile, stringTableId), stringTable);
             }
 
-            return results;
-        } catch (FileNotFoundException) { } catch (DirectoryNotFoundException) { } catch (PortableExecutableImageException) { }
-
-        return Enumerable.Repeat<string?>(null, queries.Count).ToList();
+            return stringTable?.FirstOrDefault(entry => entry.Id == stringTableEntryId)?.Value;
+        } catch (PortableExecutableImageException) {
+            return null;
+        }
     }
 
-    private static unsafe string getCurrentSystemLocaleName() {
-        int bufferSize = 0;
+    private static unsafe string[] getCurrentSystemLocaleNames() {
+        const uint MUI_LANGUAGE_NAME = 8;
+        int        bufferSize        = 0;
         getSystemPreferredUILanguages(MUI_LANGUAGE_NAME, out _, null, ref bufferSize);
         char[] buffer = new char[bufferSize];
+        uint   languageCount;
         fixed (char* bufferStart = &buffer[0]) {
-            getSystemPreferredUILanguages(MUI_LANGUAGE_NAME, out _, bufferStart, ref bufferSize);
+            getSystemPreferredUILanguages(MUI_LANGUAGE_NAME, out languageCount, bufferStart, ref bufferSize);
         }
-        var results = new ReadOnlySpan<char>(buffer, 0, bufferSize);
-        return new string(results[..results.IndexOf('\0')]); // only return the first language name, even if buffer contains more than one (null-delimited)
+        var resultsBuffer = new ReadOnlySpan<char>(buffer, 0, bufferSize);
+        // #18: Get all preferred languages, not just the first one, in case the most-preferred language pack is missing MUI files
+        var resultsSplit = new Range[languageCount];
+        resultsBuffer.Trim('\0').Split(resultsSplit, '\0'); // ReadOnlySpan.Split will leave delimiters intact if the destination span length is 1, which sucks, so trim early
+        string[] results = new string[languageCount];
+        for (int i = 0; i < languageCount; i++) {
+            results[i] = resultsBuffer[resultsSplit[i]].ToString();
+        }
+        return results;
     }
 
     /// <summary>
