@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 1,
   "dependencies": {
     "net8.0-windows7.0": {
@@ -37,9 +37,9 @@
       },
       "ThrottleDebounce": {
         "type": "Direct",
-        "requested": "[2.0.1, )",
-        "resolved": "2.0.1",
-        "contentHash": "6kdd65+HCrSbO80ELfyQJMs/My8tbpqoxS6VDfhQSdTq8y2kLjxpfxnVEeh3Av1Q+XDOxMv/rBXYsgQR3iQswA=="
+        "requested": "[3.0.0-beta2, )",
+        "resolved": "3.0.0-beta2",
+        "contentHash": "VHkd+bDkUGBP9+PIARIgKAiczlrItAq2x/zmLMnuIbwI8QDXPUvIYoOQbyGmKVdgODC6V37a0FT4eIhwESPWjA=="
       },
       "Workshell.PE.Resources": {
         "type": "Direct",
