@@ -22,6 +22,9 @@ public class Startup {
 
     private static Logger? logger;
 
+    [Option("--skip-all-non-security-key-options", CommandOptionType.NoValue)]
+    public bool skipAllNonSecurityKeyOptions { get; }
+
     [Option(DefaultHelpOptionConvention.DefaultHelpTemplate, CommandOptionType.NoValue)]
     public bool help { get; }
 
@@ -55,13 +58,14 @@ public class Startup {
                     logger.Info("{name} {version} starting", PROGRAM_NAME, PROGRAM_VERSION);
                     (string name, string marketingVersion, Version version, string arch) os = getOsVersion();
                     logger.Info("Operating system is {name} {marketingVersion} {version} {arch}", os.name, os.marketingVersion, os.version, os.arch);
-                    logger.Info("Locales are {userLocale} (user) and {systemLocale} (system)", I18N.userLocaleName, I18N.systemLocaleName);
+                    logger.Info("Locales are {locales}", string.Join(", ", I18N.LOCALE_NAMES));
 
                     using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
-                    windowOpeningListener.windowOpened += (_, window) => SecurityKeyChooser.chooseUsbSecurityKey(window);
+                    SecurityKeyChooser          securityKeyChooser    = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
+                    windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
 
                     foreach (SystemWindow fidoPromptWindow in SystemWindow.FilterToplevelWindows(SecurityKeyChooser.isFidoPromptWindow)) {
-                        SecurityKeyChooser.chooseUsbSecurityKey(fidoPromptWindow);
+                        securityKeyChooser.chooseUsbSecurityKey(fidoPromptWindow);
                     }
 
                     _ = I18N.getStrings(I18N.Key.SMARTPHONE); // ensure localization is loaded eagerly
@@ -97,6 +101,9 @@ public class Startup {
                
              {processFilename} --autostart-on-logon
                  Registers this program to start automatically every time the current user logs on to Windows.
+                 
+             {processFilename} --skip-all-non-security-key-options
+                 Chooses the Security Key option even if there are other valid options, such as an already-paired phone, or Windows Hello PIN or biometrics. By default, without this option, this program will only choose the Security Key if the sole other option is enrolling a new phone. This is an aggressive behavior, so if it skips an option you need, remember that you can hold Shift when the FIDO prompt appears if you need to choose a different option.
                  
              {processFilename} --log[=filename]
                  Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify a filename, it goes to {Path.Combine(Environment.GetEnvironmentVariable("TEMP") ?? "%TEMP%", PROGRAM_NAME + ".log")}.

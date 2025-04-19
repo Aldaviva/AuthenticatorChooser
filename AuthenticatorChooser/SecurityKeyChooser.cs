@@ -8,7 +8,7 @@ using ThrottleDebounce;
 
 namespace AuthenticatorChooser;
 
-public static class SecurityKeyChooser {
+public class SecurityKeyChooser {
 
     // #4: unfortunately, this class name is shared with the UAC prompt, detectable when desktop dimming is disabled
     private const string WINDOW_CLASS_NAME  = "Credential Dialog Xaml Host";
@@ -16,7 +16,10 @@ public static class SecurityKeyChooser {
 
     private static readonly Logger LOGGER = LogManager.GetCurrentClassLogger();
 
-    public static void chooseUsbSecurityKey(SystemWindow fidoPrompt) {
+    public bool skipAllNonSecurityKeyOptions { get; init; }
+
+    public void chooseUsbSecurityKey(SystemWindow fidoPrompt) {
+        Stopwatch overallStopwatch = Stopwatch.StartNew();
         try {
             if (!isFidoPromptWindow(fidoPrompt)) {
                 LOGGER.Trace("Window 0x{hwnd:x} is not a Windows Security window", fidoPrompt.HWnd);
@@ -36,6 +39,8 @@ public static class SecurityKeyChooser {
                 LOGGER.Debug("Window is not a passkey choice prompt");
                 return;
             }
+
+            LOGGER.Trace("Window 0x{hwnd:x} is a Windows Security window", fidoPrompt.HWnd);
 
             Condition           credentialsListIdCondition    = new PropertyCondition(AutomationElement.AutomationIdProperty, "CredentialsList");
             IEnumerable<string> securityKeyLabelPossibilities = I18N.getStrings(I18N.Key.SECURITY_KEY);
@@ -67,16 +72,15 @@ public static class SecurityKeyChooser {
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
                 nextButton.SetFocus();
                 LOGGER.Info("Shift is pressed, not submitting dialog box");
-                return;
-            } else if (!authenticatorChoices.All(choice => choice == securityKeyChoice || nameContainsAny(choice, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
+            } else if (!skipAllNonSecurityKeyOptions && !authenticatorChoices.All(choice => choice == securityKeyChoice || nameContainsAny(choice, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
                 nextButton.SetFocus();
-                LOGGER.Info("Dialog box has a choice that is neither pairing a new phone nor USB security key (such as an existing phone, PIN, or biometrics), " +
-                    "skipping because the user might want to choose it");
-                return;
+                LOGGER.Info("Dialog box has a choice that is neither pairing a new phone nor USB security key (such as an existing phone, PIN, or biometrics), skipping because the user might want " +
+                    "to choose it. You may override this behavior with --skip-all-non-security-key-options.");
+            } else {
+                ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+                overallStopwatch.Stop();
+                LOGGER.Info("Next button pressed after {0:N3} sec", overallStopwatch.Elapsed.TotalSeconds);
             }
-
-            ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
-            LOGGER.Info("Next button pressed");
         } catch (COMException e) {
             LOGGER.Warn(e, "UI Automation error while selecting security key, skipping this dialog box instance");
         }
