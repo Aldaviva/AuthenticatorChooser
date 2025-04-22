@@ -7,7 +7,7 @@
         <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.3.0</Version>
+        <Version>0.4.0</Version>
         <Authors>Ben Hutchison</Authors>
         <Copyright>© 2025 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
@@ -32,6 +32,7 @@
         <PackageReference Include="NLog" Version="5.4.0" />
         <PackageReference Include="System.Management" Version="9.0.4" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta2" />
+        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.1" />
         <PackageReference Include="Workshell.PE.Resources" Version="4.0.0.147" />
     </ItemGroup>
 
@@ -40,8 +41,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="Resources\Strings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Strings.resx" />
-        <EmbeddedResource Update="Resources\Strings.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Strings.Designer.cs" />
+        <Compile Update="Resources\LocalizedStrings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="LocalizedStrings.resx" />
+        <EmbeddedResource Update="Resources\LocalizedStrings.resx" Generator="ResXFileCodeGenerator" LastGenOutput="LocalizedStrings.Designer.cs" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' == 'Release'">

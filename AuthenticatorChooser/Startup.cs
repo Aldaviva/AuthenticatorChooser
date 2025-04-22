@@ -7,7 +7,9 @@ using NLog;
 using System.Management;
 using System.Reflection;
 using System.Security.Principal;
+using System.Windows.Automation;
 using System.Windows.Forms;
+using Unfucked;
 
 // ReSharper disable ClassNeverInstantiated.Global - it's actually instantiated by McMaster.Extensions.CommandLineUtils
 // ReSharper disable UnassignedGetOnlyAutoProperty - it's actually assigned by McMaster.Extensions.CommandLineUtils
@@ -60,12 +62,26 @@ public class Startup {
                     logger.Info("Operating system is {name} {marketingVersion} {version} {arch}", os.name, os.marketingVersion, os.version, os.arch);
                     logger.Info("Locales are {locales}", string.Join(", ", I18N.LOCALE_NAMES));
 
-                    using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
-                    SecurityKeyChooser          securityKeyChooser    = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
-                    windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
+                    SynchronizationContext synchronizationContext = new WindowsFormsSynchronizationContext();
 
-                    foreach (SystemWindow fidoPromptWindow in SystemWindow.FilterToplevelWindows(SecurityKeyChooser.isFidoPromptWindow)) {
-                        securityKeyChooser.chooseUsbSecurityKey(fidoPromptWindow);
+                    using WindowOpeningListener windowOpeningListener     = new WindowOpeningListenerImpl();
+                    WindowsSecurityKeyChooser   windowsSecurityKeyChooser = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
+                    ChromeSecurityKeyChooser    chromeSecurityKeyChooser  = new();
+                    windowOpeningListener.windowOpened                 += (_, window) => windowsSecurityKeyChooser.chooseUsbSecurityKey(window);
+                    windowOpeningListener.automationElementMaybeOpened += (_, child) => synchronizationContext.Post(_ => chromeSecurityKeyChooser.chooseUsbSecurityKey(child), null);
+                    windowOpeningListener.listenForOpenedChildAutomationElements(ChromeSecurityKeyChooser.PARENT_WINDOW_CLASS);
+
+                    // Automation.AddAutomationEventHandler(WindowPattern.WindowOpenedEvent, AutomationElement.RootElement, TreeScope.Descendants,
+                    //     (sender, args) => { logger.Debug("Window opened with name {name}", (sender as AutomationElement)?.Current.Name); });
+                    // Automation.AddStructureChangedEventHandler();
+
+                    foreach (SystemWindow fidoPromptWindow in SystemWindow.FilterToplevelWindows(WindowsSecurityKeyChooser.isFidoPromptWindow)) {
+                        windowsSecurityKeyChooser.chooseUsbSecurityKey(fidoPromptWindow);
+                    }
+
+                    foreach (AutomationElement chromeChildEl in SystemWindow.FilterToplevelWindows(ChromeSecurityKeyChooser.isChromeWindow)
+                                 .SelectMany(chrome => chrome.ToAutomationElement()?.Children() ?? [])) {
+                        chromeSecurityKeyChooser.chooseUsbSecurityKey(chromeChildEl);
                     }
 
                     _ = I18N.getStrings(I18N.Key.SMARTPHONE); // ensure localization is loaded eagerly
@@ -103,7 +119,7 @@ public class Startup {
                  Registers this program to start automatically every time the current user logs on to Windows.
                  
              {processFilename} --skip-all-non-security-key-options
-                 Chooses the Security Key option even if there are other valid options, such as an already-paired phone, or Windows Hello PIN or biometrics. By default, without this option, this program will only choose the Security Key if the sole other option is enrolling a new phone. This is an aggressive behavior, so if it skips an option you need, remember that you can hold Shift when the FIDO prompt appears if you need to choose a different option.
+                 Chooses the Security Key option even if there are other valid options, such as an already-paired phone, or Windows Hello PIN or biometrics. By default, without this option, this program will only choose the Security Key if the sole other option is pairing a new phone. This is an aggressive behavior, so if it skips an option you need, remember that you can hold Shift when the FIDO prompt appears if you need to choose a different option.
                  
              {processFilename} --log[=filename]
                  Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify a filename, it goes to {Path.Combine(Environment.GetEnvironmentVariable("TEMP") ?? "%TEMP%", PROGRAM_NAME + ".log")}.

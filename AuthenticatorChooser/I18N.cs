@@ -2,6 +2,7 @@
 using System.Collections.Frozen;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Unfucked;
 using Workshell.PE;
 using Workshell.PE.Resources;
 using Workshell.PE.Resources.Strings;
@@ -32,10 +33,10 @@ public static partial class I18N {
         string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows";
 
         STRINGS = new Dictionary<Key, IList<string>> {
-            [Key.SECURITY_KEY]              = getStrings(nameof(Strings.securityKey), fidoCredProvMuiPath, 15, 230),    // Security key
-            [Key.SMARTPHONE]                = getStrings(nameof(Strings.smartphone), fidoCredProvMuiPath, 15, 231),     // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
-            [Key.WINDOWS]                   = getStrings(nameof(Strings.windows), fidoCredProvMuiPath, 15, 232),        // Windows
-            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(Strings.signInWithYourPasskey), webAuthnMuiPath, 4, 53) // Sign In With Your Passkey title; entry 63 has the same value
+            [Key.SECURITY_KEY] = getStrings(nameof(LocalizedStrings.securityKey), fidoCredProvMuiPath, 15, 230), // Security key
+            [Key.SMARTPHONE] = getStrings(nameof(LocalizedStrings.smartphone), fidoCredProvMuiPath, 15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
+            [Key.WINDOWS] = getStrings(nameof(LocalizedStrings.windows), fidoCredProvMuiPath, 15, 232), // Windows
+            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithYourPasskey), webAuthnMuiPath, 4, 53) // Sign In With Your Passkey title; entry 63 has the same value
         }.ToFrozenDictionary();
 
         foreach (PortableExecutableImage? dllFile in DLL_CACHE.Values) {
@@ -54,7 +55,7 @@ public static partial class I18N {
     // #18: The most-preferred language pack can be missing MUI files if it was installed after Windows, so always fall back to all other preferred languages
     private static IList<string> getStrings(string compiledResourceName, Func<string, string> libraryPath, int stringTableId, int stringTableEntryId) =>
         LOCALE_NAMES.SelectMany(locale => (List<string?>) [
-            Strings.ResourceManager.GetString(compiledResourceName, CultureInfo.GetCultureInfo(locale)),
+            LocalizedStrings.ResourceManager.GetString(compiledResourceName, CultureInfo.GetCultureInfo(locale)),
             getPeFileString(libraryPath(locale), stringTableId, stringTableEntryId)
         ]).Compact().Distinct(STRING_COMPARER).ToList();
 
