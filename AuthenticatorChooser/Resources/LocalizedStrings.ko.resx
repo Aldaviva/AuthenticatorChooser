@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -23,5 +23,11 @@
   </data>
   <data name="signInWithYourPasskey" xml:space="preserve">
     <value>암호 키로 로그인</value>
+  </data>
+  <data name="useASavedPasskeyFor" xml:space="preserve">
+    <value>에 저장된 패스키 사용</value>
+  </data>
+  <data name="windowsHelloOrExternalSecurityKey" xml:space="preserve">
+    <value>Windows Hello 또는 외부 보안 키</value>
   </data>
 </root>

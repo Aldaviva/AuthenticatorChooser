@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="reader">
     <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -23,5 +23,11 @@
   </data>
   <data name="signInWithYourPasskey" xml:space="preserve">
     <value>Prijavite se s pomoću pristupne tipke</value>
+  </data>
+  <data name="useASavedPasskeyFor" xml:space="preserve">
+    <value>Upotrijebite spremljeni pristupni ključ za aplikaciju </value>
+  </data>
+  <data name="windowsHelloOrExternalSecurityKey" xml:space="preserve">
+    <value>Windows Hello ili vanjski sigurnosni ključ</value>
   </data>
 </root>

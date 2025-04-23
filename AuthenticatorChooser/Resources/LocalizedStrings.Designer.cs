@@ -88,11 +88,29 @@ namespace AuthenticatorChooser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use a saved passkey for .
+        /// </summary>
+        internal static string useASavedPasskeyFor {
+            get {
+                return ResourceManager.GetString("useASavedPasskeyFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This Windows device.
         /// </summary>
         internal static string windows {
             get {
                 return ResourceManager.GetString("windows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windows Hello or external security key.
+        /// </summary>
+        internal static string windowsHelloOrExternalSecurityKey {
+            get {
+                return ResourceManager.GetString("windowsHelloOrExternalSecurityKey", resourceCulture);
             }
         }
     }

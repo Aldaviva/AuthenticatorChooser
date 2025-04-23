@@ -1,0 +1,20 @@
+<root>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="useASavedPasskeyFor" xml:space="preserve">
+    <value> ആപ്പിനായി, സംരക്ഷിച്ച പാസ്‌കീ ഉപയോഗിക്കുക</value>
+  </data>
+  <data name="windowsHelloOrExternalSecurityKey" xml:space="preserve">
+    <value>Windows Hello അല്ലെങ്കിൽ ബാഹ്യ സുരക്ഷാ കീ</value>
+  </data>
+</root>
