@@ -1,9 +1,9 @@
-﻿using ManagedWinapi.Windows;
+﻿using AuthenticatorChooser.Resources;
+using ManagedWinapi.Windows;
 using NLog;
 using System.Runtime.InteropServices;
 using System.Windows.Automation;
 using System.Windows.Input;
-using Unfucked;
 
 namespace AuthenticatorChooser;
 
@@ -15,14 +15,13 @@ public class ChromeSecurityKeyChooser: SecurityKeyChooser<AutomationElement> {
 
     public void chooseUsbSecurityKey(AutomationElement fidoEl) {
         try {
-            if (!fidoEl.Current.Name.Contains("Use a saved passkey for ")) { // TODO localize name
-                LOGGER.Trace("Window 0x{hwnd:x} (name: {name}) is not a Chrome passkey prompt", fidoEl.ToHwnd(), fidoEl.Current.Name);
+            if (!fidoEl.Current.Name.Contains(LocalizedStrings.useASavedPasskeyFor)) {
                 return;
             }
 
             AutomationElementCollection buttons = fidoEl.FindAll(TreeScope.Descendants, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button));
 
-            AutomationElement? securityKeyButton = buttons.Cast<AutomationElement>().FirstOrDefault(button => button.Current.Name == "Windows Hello or external security key"); // TODO localize name
+            AutomationElement? securityKeyButton = buttons.Cast<AutomationElement>().FirstOrDefault(button => button.Current.Name == LocalizedStrings.windowsHelloOrExternalSecurityKey);
 
             if (securityKeyButton == null) {
                 LOGGER.Debug("Could not find security key button in FIDO dialog box");

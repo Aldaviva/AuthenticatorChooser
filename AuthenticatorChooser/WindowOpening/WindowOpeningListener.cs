@@ -1,5 +1,4 @@
 ﻿using ManagedWinapi.Windows;
-using NLog;
 using System.Collections.Concurrent;
 using System.Windows.Automation;
 using Unfucked;
@@ -16,8 +15,6 @@ public interface WindowOpeningListener: IDisposable {
 }
 
 public class WindowOpeningListenerImpl: WindowOpeningListener {
-
-    private static readonly Logger LOGGER = LogManager.GetCurrentClassLogger();
 
     public event EventHandler<SystemWindow>? windowOpened;
     public event EventHandler<AutomationElement>? automationElementMaybeOpened;
