@@ -22,18 +22,11 @@ public class WindowOpeningListenerImpl: WindowOpeningListener {
     public event EventHandler<SystemWindow>? windowOpened;
     public event EventHandler<AutomationElement>? automationElementMaybeOpened;
 
-    // private readonly ConcurrentBag<AutomationElement> watchedParents          = [];
-    // private readonly ConcurrentStack<string>            watchedParentClassNames = [];
     private readonly ConcurrentDictionary<string, ConcurrentBag<AutomationElement>> watchedParentsByClassName = new();
-
-    private readonly ShellHook shellHook = new ShellHookImpl();
-
-    // private readonly ConcurrentDictionary<int, Enumerables.ValueHolder<long>> alreadyOpenedWindows = Enumerables.CreateConcurrentDictionary<int, long>();
+    private readonly ShellHook                                                      shellHook                 = new ShellHookImpl();
 
     public WindowOpeningListenerImpl() {
         shellHook.shellEvent += onWindowOpened;
-
-        // Automation.AddAutomationEventHandler(WindowPattern.WindowOpenedEvent, AutomationElement.RootElement, TreeScope.Children, onWindowOpened);
     }
 
     private void onWindowOpened(object? sender, ShellEventArgs args) {
@@ -62,34 +55,20 @@ public class WindowOpeningListenerImpl: WindowOpeningListener {
     }
 
     private void listenForOpenedChildAutomationElements(AutomationElement parent) {
-        Automation.AddStructureChangedEventHandler(parent, TreeScope.Subtree, onChildStructureChanged);
-        LOGGER.Debug("Listening for window 0x{hwnd:x} to open child windows", parent.ToHwnd());
+        Automation.AddStructureChangedEventHandler(parent, TreeScope.Descendants, onChildStructureChanged);
     }
 
     private void onChildStructureChanged(object sender, AutomationEventArgs e) {
-        try {
-            if (e is StructureChangedEventArgs { StructureChangeType: StructureChangeType.ChildAdded or StructureChangeType.ChildrenBulkAdded }) {
-                // This is stupid. UIA doesn't tell us what element was actually added when the structure changed, so we must rescan all the parents.
-                foreach (ConcurrentBag<AutomationElement> parents in watchedParentsByClassName.Values) {
-                    foreach (AutomationElement parent in parents) {
-                        IList<AutomationElement> automationElements = parent.Children().ToList();
-                        LOGGER.Debug("Parent has {num} children", automationElements.Count);
-                        foreach (AutomationElement child in automationElements) {
-                            automationElementMaybeOpened?.Invoke(this, child);
-                        }
+        if (e is StructureChangedEventArgs { StructureChangeType: StructureChangeType.ChildAdded or StructureChangeType.ChildrenBulkAdded }) {
+            // This is stupid. UIA doesn't tell us what element was actually added when the structure changed, so we must rescan all the parents.
+            foreach (ConcurrentBag<AutomationElement> parents in watchedParentsByClassName.Values) {
+                foreach (AutomationElement parent in parents) {
+                    foreach (AutomationElement child in parent.Children()) {
+                        automationElementMaybeOpened?.Invoke(this, child);
                     }
                 }
             }
-        } catch (Exception exception) when (exception is not OutOfMemoryException) {
-            LOGGER.Error(exception);
-            throw;
         }
-        // if (sender is AutomationElement child) {
-        //     if (e is StructureChangedEventArgs { StructureChangeType: StructureChangeType.ChildAdded } foo) {
-        //         LOGGER.Debug("Child element opened with name {name} and runtimeID {id}", child.Current.Name, string.Join('.', foo.GetRuntimeId()));
-        //         automationElementOpened?.Invoke(this, child);
-        //     }
-        // }
     }
 
     public void Dispose() {

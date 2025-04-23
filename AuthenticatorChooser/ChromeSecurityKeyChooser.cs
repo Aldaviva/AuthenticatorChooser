@@ -15,7 +15,7 @@ public class ChromeSecurityKeyChooser: SecurityKeyChooser<AutomationElement> {
 
     public void chooseUsbSecurityKey(AutomationElement fidoEl) {
         try {
-            if (!fidoEl.Current.Name.StartsWith("Use a saved passkey for ")) { // TODO localize name
+            if (!fidoEl.Current.Name.Contains("Use a saved passkey for ")) { // TODO localize name
                 LOGGER.Trace("Window 0x{hwnd:x} (name: {name}) is not a Chrome passkey prompt", fidoEl.ToHwnd(), fidoEl.Current.Name);
                 return;
             }

@@ -62,18 +62,15 @@ public class Startup {
                     logger.Info("Operating system is {name} {marketingVersion} {version} {arch}", os.name, os.marketingVersion, os.version, os.arch);
                     logger.Info("Locales are {locales}", string.Join(", ", I18N.LOCALE_NAMES));
 
-                    SynchronizationContext synchronizationContext = new WindowsFormsSynchronizationContext();
-
+                    // Checking keyboard state must run on the UI thread
+                    SynchronizationContext      synchronizationContext    = new WindowsFormsSynchronizationContext();
                     using WindowOpeningListener windowOpeningListener     = new WindowOpeningListenerImpl();
                     WindowsSecurityKeyChooser   windowsSecurityKeyChooser = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
                     ChromeSecurityKeyChooser    chromeSecurityKeyChooser  = new();
+
                     windowOpeningListener.windowOpened                 += (_, window) => windowsSecurityKeyChooser.chooseUsbSecurityKey(window);
                     windowOpeningListener.automationElementMaybeOpened += (_, child) => synchronizationContext.Post(_ => chromeSecurityKeyChooser.chooseUsbSecurityKey(child), null);
                     windowOpeningListener.listenForOpenedChildAutomationElements(ChromeSecurityKeyChooser.PARENT_WINDOW_CLASS);
-
-                    // Automation.AddAutomationEventHandler(WindowPattern.WindowOpenedEvent, AutomationElement.RootElement, TreeScope.Descendants,
-                    //     (sender, args) => { logger.Debug("Window opened with name {name}", (sender as AutomationElement)?.Current.Name); });
-                    // Automation.AddStructureChangedEventHandler();
 
                     foreach (SystemWindow fidoPromptWindow in SystemWindow.FilterToplevelWindows(WindowsSecurityKeyChooser.isFidoPromptWindow)) {
                         windowsSecurityKeyChooser.chooseUsbSecurityKey(fidoPromptWindow);
