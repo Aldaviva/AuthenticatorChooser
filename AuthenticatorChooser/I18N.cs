@@ -13,20 +13,23 @@ public static partial class I18N {
 
     public enum Key {
 
+        // Windows
         SECURITY_KEY,
         SMARTPHONE,
         WINDOWS,
-        SIGN_IN_WITH_YOUR_PASSKEY
+        SIGN_IN_WITH_YOUR_PASSKEY,
+
+        // Chromium
+        USE_A_SAVED_PASSKEY_FOR,
+        WINDOWS_HELLO_OR_EXTERNAL_SECURITY_KEY
 
     }
 
-    public static readonly IReadOnlyList<string> LOCALE_NAMES = ((List<string>) [CultureInfo.CurrentCulture.Name, CultureInfo.CurrentUICulture.Name]).Concat(getCurrentSystemLocaleNames()).Distinct()
-        .ToList();
-
-    private static readonly FrozenDictionary<Key, IList<string>>          STRINGS;
-    private static readonly StringComparer                                STRING_COMPARER    = StringComparer.CurrentCulture;
-    private static readonly IDictionary<string, PortableExecutableImage?> DLL_CACHE          = new Dictionary<string, PortableExecutableImage?>();
-    private static readonly IDictionary<(string, int), StringTable?>      STRING_TABLE_CACHE = new Dictionary<(string, int), StringTable?>();
+    public static readonly  IReadOnlyList<string> LOCALE_NAMES = getCurrentSystemLocaleNames().Prepend(CultureInfo.CurrentUICulture.Name).Prepend(CultureInfo.CurrentCulture.Name).ToList();
+    private static readonly FrozenDictionary<Key, IList<string>> STRINGS;
+    private static readonly StringComparer STRING_COMPARER = StringComparer.CurrentCulture;
+    private static readonly IDictionary<string, PortableExecutableImage?> DLL_CACHE = new Dictionary<string, PortableExecutableImage?>();
+    private static readonly IDictionary<(string, int), StringTable?> STRING_TABLE_CACHE = new Dictionary<(string, int), StringTable?>();
 
     static I18N() {
         StringTableResource.Register();
@@ -36,7 +39,9 @@ public static partial class I18N {
             [Key.SECURITY_KEY] = getStrings(nameof(LocalizedStrings.securityKey), fidoCredProvMuiPath, 15, 230), // Security key
             [Key.SMARTPHONE] = getStrings(nameof(LocalizedStrings.smartphone), fidoCredProvMuiPath, 15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
             [Key.WINDOWS] = getStrings(nameof(LocalizedStrings.windows), fidoCredProvMuiPath, 15, 232), // Windows
-            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithYourPasskey), webAuthnMuiPath, 4, 53) // Sign In With Your Passkey title; entry 63 has the same value
+            [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithYourPasskey), webAuthnMuiPath, 4, 53), // Sign In With Your Passkey title; entry 63 has the same value
+            [Key.USE_A_SAVED_PASSKEY_FOR] = getStrings(nameof(LocalizedStrings.useASavedPasskeyFor)).ToList(),
+            [Key.WINDOWS_HELLO_OR_EXTERNAL_SECURITY_KEY] = getStrings(nameof(LocalizedStrings.windowsHelloOrExternalSecurityKey)).ToList()
         }.ToFrozenDictionary();
 
         foreach (PortableExecutableImage? dllFile in DLL_CACHE.Values) {
@@ -54,10 +59,13 @@ public static partial class I18N {
 
     // #18: The most-preferred language pack can be missing MUI files if it was installed after Windows, so always fall back to all other preferred languages
     private static IList<string> getStrings(string compiledResourceName, Func<string, string> libraryPath, int stringTableId, int stringTableEntryId) =>
-        LOCALE_NAMES.SelectMany(locale => (List<string?>) [
-            LocalizedStrings.ResourceManager.GetString(compiledResourceName, CultureInfo.GetCultureInfo(locale)),
-            getPeFileString(libraryPath(locale), stringTableId, stringTableEntryId)
-        ]).Compact().Distinct(STRING_COMPARER).ToList();
+        getStrings(compiledResourceName)
+            .Concat(LOCALE_NAMES.Select(locale => getPeFileString(libraryPath(locale), stringTableId, stringTableEntryId)))
+            .Compact().Distinct(STRING_COMPARER).ToList();
+
+    private static IEnumerable<string> getStrings(string compiledResourceName) => LOCALE_NAMES.Select(locale =>
+            LocalizedStrings.ResourceManager.GetString(compiledResourceName, CultureInfo.GetCultureInfo(locale)))
+        .Compact().Distinct(STRING_COMPARER);
 
     private static string? getPeFileString(string peFile, int stringTableId, int stringTableEntryId) {
         try {

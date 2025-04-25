@@ -9,7 +9,7 @@ using Unfucked;
 
 namespace AuthenticatorChooser;
 
-public class WindowsSecurityKeyChooser: SecurityKeyChooser<SystemWindow> {
+public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow> {
 
     // #4: unfortunately, this class name is shared with the UAC prompt, detectable when desktop dimming is disabled
     private const string WINDOW_CLASS_NAME  = "Credential Dialog Xaml Host";
@@ -19,7 +19,7 @@ public class WindowsSecurityKeyChooser: SecurityKeyChooser<SystemWindow> {
 
     public bool skipAllNonSecurityKeyOptions { get; init; }
 
-    public void chooseUsbSecurityKey(SystemWindow fidoPrompt) {
+    public override void chooseUsbSecurityKey(SystemWindow fidoPrompt) {
         Stopwatch overallStopwatch = Stopwatch.StartNew();
         try {
             if (!isFidoPromptWindow(fidoPrompt)) {
@@ -51,8 +51,8 @@ public class WindowsSecurityKeyChooser: SecurityKeyChooser<SystemWindow> {
             try {
                 authenticatorChoices = Retrier.Attempt(_ =>
                         outerScrollViewer.FindFirst(TreeScope.Children, credentialsListIdCondition).Children().ToList(),
-                    maxAttempts: 124,                                                        // #5, #11: ~60 sec
-                    delay: attempt => TimeSpan.FromMilliseconds(1 << Math.Min(attempt, 9))); // #11: power series backoff, max=512 ms
+                    maxAttempts: 127,                                                                                // #5, #11: ~60 sec total
+                    delay: Retrier.Delays.Power(TimeSpan.FromMilliseconds(1), max: TimeSpan.FromMilliseconds(500))); // #11: power series backoff, max=500 ms per attempt
                 LOGGER.Trace("Found authenticator choices after {0:N3} sec", authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
             } catch (Exception e) when (e is not OutOfMemoryException) {
                 LOGGER.Error(e, "Could not find authenticator choices after retrying for {0:N3} sec due to the following exception. Giving up and not automatically selecting Security Key.",
@@ -75,8 +75,8 @@ public class WindowsSecurityKeyChooser: SecurityKeyChooser<SystemWindow> {
                 LOGGER.Info("Shift is pressed, not submitting dialog box");
             } else if (!skipAllNonSecurityKeyOptions && !authenticatorChoices.All(choice => choice == securityKeyChoice || nameContainsAny(choice, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
                 nextButton.SetFocus();
-                LOGGER.Info("Dialog box has a choice that is neither pairing a new phone nor USB security key (such as an existing phone, PIN, or biometrics), skipping because the user might want " +
-                    "to choose it. You may override this behavior with --skip-all-non-security-key-options.");
+                LOGGER.Info(
+                    "Dialog box has a choice that is neither pairing a new phone nor USB security key (such as an existing phone, PIN, or biometrics), skipping because the user might want to choose it. You may override this behavior with --skip-all-non-security-key-options.");
             } else {
                 ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
                 overallStopwatch.Stop();
@@ -88,13 +88,7 @@ public class WindowsSecurityKeyChooser: SecurityKeyChooser<SystemWindow> {
     }
 
     // Window name and title are localized, so don't match against those
-    public static bool isFidoPromptWindow(SystemWindow window) => window.ClassName == WINDOW_CLASS_NAME;
-
-    private static bool nameContainsAny(AutomationElement element, IEnumerable<string?> possibleSubstrings) {
-        string name = element.Current.Name;
-        // #2: in addition to a prefix, there is sometimes also a suffix after the substring
-        return possibleSubstrings.Any(possibleSubstring => possibleSubstring != null && name.Contains(possibleSubstring, StringComparison.CurrentCulture));
-    }
+    public override bool isFidoPromptWindow(SystemWindow window) => window.ClassName == WINDOW_CLASS_NAME;
 
     /// <summary>
     /// <para>Create an <see cref="AndCondition"/> or <see cref="OrCondition"/> for a <paramref name="property"/> from a series of <paramref name="values"/>, which have fewer than 2 items in it.</para>

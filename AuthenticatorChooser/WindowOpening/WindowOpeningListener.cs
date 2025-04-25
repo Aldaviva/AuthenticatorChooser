@@ -77,6 +77,7 @@ public class WindowOpeningListenerImpl: WindowOpeningListener {
                 Automation.RemoveStructureChangedEventHandler(parent, onChildStructureChanged);
             }
         }
+        watchedParentsByClassName.Clear();
 
         GC.SuppressFinalize(this);
     }

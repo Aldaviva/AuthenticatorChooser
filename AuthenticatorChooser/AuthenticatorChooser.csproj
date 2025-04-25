@@ -24,6 +24,7 @@
 
     <ItemGroup>
         <Content Include="YubiKey.ico" />
+        <None Include="..\Readme.md;..\.github*\**" />
     </ItemGroup>
 
     <ItemGroup>
