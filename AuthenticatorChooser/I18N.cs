@@ -25,11 +25,13 @@ public static partial class I18N {
 
     }
 
-    public static readonly  IReadOnlyList<string> LOCALE_NAMES = getCurrentSystemLocaleNames().Prepend(CultureInfo.CurrentUICulture.Name).Prepend(CultureInfo.CurrentCulture.Name).ToList();
-    private static readonly FrozenDictionary<Key, IList<string>> STRINGS;
-    private static readonly StringComparer STRING_COMPARER = StringComparer.CurrentCulture;
-    private static readonly IDictionary<string, PortableExecutableImage?> DLL_CACHE = new Dictionary<string, PortableExecutableImage?>();
-    private static readonly IDictionary<(string, int), StringTable?> STRING_TABLE_CACHE = new Dictionary<(string, int), StringTable?>();
+    public static readonly IReadOnlyList<string> LOCALE_NAMES = getCurrentSystemLocaleNames().Prepend(CultureInfo.CurrentUICulture.Name).Prepend(CultureInfo.CurrentCulture.Name)
+        .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+    private static readonly StringComparer                                STRING_COMPARER = StringComparer.CurrentCulture;
+    private static readonly FrozenDictionary<Key, IList<string>>          STRINGS;
+    private static readonly IDictionary<string, PortableExecutableImage?> DLL_CACHE          = new Dictionary<string, PortableExecutableImage?>();
+    private static readonly IDictionary<(string, int), StringTable?>      STRING_TABLE_CACHE = new Dictionary<(string, int), StringTable?>();
 
     static I18N() {
         StringTableResource.Register();

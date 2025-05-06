@@ -10,7 +10,9 @@ namespace AuthenticatorChooser;
 internal static class Logging {
 
     private static readonly SimpleLayout MESSAGE_FORMAT = new(
-        " ${level:format=FirstCharacter:lowercase=true} | ${date:format=yyyy-MM-dd HH\\:mm\\:ss.fff} | ${logger:shortName=true:padding=-18} | ${message:withException=true:exceptionSeparator=\n}");
+        " ${level:format=FirstCharacter:lowercase=true} | ${date:format=yyyy-MM-dd HH\\:mm\\:ss.fff} | ${logger:shortName=true:padding=-26} | ${message:withException=true:exceptionSeparator=\n}");
+
+    private static readonly LogLevel LOG_LEVEL = LogLevel.Debug;
 
     public static void initialize(bool enableFileAppender, string? logFilename) {
         logFilename ??= Path.Combine(Path.GetTempPath(), Path.ChangeExtension(nameof(AuthenticatorChooser), ".log"));
@@ -20,14 +22,14 @@ internal static class Logging {
         services.RegisterService(typeof(IValueFormatter), new UnfuckedValueFormatter((IValueFormatter) services.GetService(typeof(IValueFormatter))!));
 
         if (enableFileAppender) {
-            logConfig.AddRule(LogLevel.Trace, LogLevel.Fatal, new FileTarget("fileAppender") {
+            logConfig.AddRule(LOG_LEVEL, LogLevel.Fatal, new FileTarget("fileAppender") {
                 Layout          = MESSAGE_FORMAT,
                 FileName        = logFilename,
                 CleanupFileName = true
             });
         }
 
-        logConfig.AddRule(LogLevel.Trace, LogLevel.Fatal, new ConsoleTarget("consoleAppender") {
+        logConfig.AddRule(LOG_LEVEL, LogLevel.Fatal, new ConsoleTarget("consoleAppender") {
             Layout                 = MESSAGE_FORMAT,
             DetectConsoleAvailable = true
         });

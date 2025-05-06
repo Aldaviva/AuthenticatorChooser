@@ -49,10 +49,9 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
             Stopwatch                      authenticatorChoicesStopwatch = Stopwatch.StartNew();
             ICollection<AutomationElement> authenticatorChoices;
             try {
-                authenticatorChoices = Retrier.Attempt(_ =>
-                        outerScrollViewer.FindFirst(TreeScope.Children, credentialsListIdCondition).Children().ToList(),
-                    maxAttempts: 127,                                                                                // #5, #11: ~60 sec total
-                    delay: Retrier.Delays.Power(TimeSpan.FromMilliseconds(1), max: TimeSpan.FromMilliseconds(500))); // #11: power series backoff, max=500 ms per attempt
+                // #5, #11: power series backoff, max=500 ms per attempt, ~1 minute total
+                authenticatorChoices = Retrier.Attempt(_ => outerScrollViewer.FindFirst(TreeScope.Children, credentialsListIdCondition).Children().ToList(),
+                    maxAttempts: 127, delay: Retrier.Delays.Power(TimeSpan.FromMilliseconds(1), max: TimeSpan.FromMilliseconds(500)));
                 LOGGER.Trace("Found authenticator choices after {0:N3} sec", authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
             } catch (Exception e) when (e is not OutOfMemoryException) {
                 LOGGER.Error(e, "Could not find authenticator choices after retrying for {0:N3} sec due to the following exception. Giving up and not automatically selecting Security Key.",
@@ -89,22 +88,5 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
 
     // Window name and title are localized, so don't match against those
     public override bool isFidoPromptWindow(SystemWindow window) => window.ClassName == WINDOW_CLASS_NAME;
-
-    /// <summary>
-    /// <para>Create an <see cref="AndCondition"/> or <see cref="OrCondition"/> for a <paramref name="property"/> from a series of <paramref name="values"/>, which have fewer than 2 items in it.</para>
-    /// <para>This avoids a crash in the <see cref="AndCondition"/> and <see cref="OrCondition"/> constructors if the array has size 1.</para>
-    /// </summary>
-    /// <param name="property">The name of the UI property to match against, such as <see cref="AutomationElement.NameProperty"/> or <see cref="AutomationElement.AutomationIdProperty"/>.</param>
-    /// <param name="and"><c>true</c> to make a conjunction (AND), <c>false</c> to make a disjunction (OR)</param>
-    /// <param name="values">Zero or more property values to match against.</param>
-    /// <returns>A <see cref="Condition"/> that matches the values against the property, without throwing an <see cref="ArgumentException"/> if <paramref name="values"/> has length &lt; 2.</returns>
-    private static Condition singletonSafePropertyCondition(AutomationProperty property, bool and, IEnumerable<string> values) {
-        Condition[] propertyConditions = values.Select<string, Condition>(allowedValue => new PropertyCondition(property, allowedValue)).ToArray();
-        return propertyConditions.Length switch {
-            0 => and ? Condition.TrueCondition : Condition.FalseCondition,
-            1 => propertyConditions[0],
-            _ => and ? new AndCondition(propertyConditions) : new OrCondition(propertyConditions)
-        };
-    }
 
 }

@@ -11,7 +11,7 @@ internal readonly record struct OsVersion(string name, string marketingVersion, 
 
     private const string NT_CURRENTVERSION_KEY = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion";
 
-    public static OsVersion create() {
+    public static OsVersion getCurrent() {
         using ManagementObjectSearcher   wmiSearch  = new(new SelectQuery("Win32_OperatingSystem", null, ["Caption", "Version"]));
         using ManagementObjectCollection wmiResults = wmiSearch.Get();
         using ManagementObject           wmiResult  = wmiResults.Cast<ManagementObject>().First();
