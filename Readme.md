@@ -64,11 +64,16 @@ Even if this program doesn't click the Next button (because an extra choice was 
 1. Extract the `AuthenticatorChooser.exe` file from the ZIP archive to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
-1. Register the program to run automatically on user logon with any **one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2.
+1. Register the program to run automatically on user logon with **any one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2. If you'd like to specify additional command-line arguments like `--skip-all-non-security-key-options`, you can do that here.
     - Run this program once with the `--autostart-on-logon` argument
         ```ps1
         .\AuthenticatorChooser --autostart-on-logon
         ```
+        That will register it as a startup program and then immediately exit, so if you want to also start the program without having to log out or reboot, run it again without the `--autostart-on-logon` argument:
+        ```ps1
+        .\AuthenticatorChooser
+        ```
+    - Add a shortcut to `AuthenticatorChooser.exe` in the Startup folder (`%APPDATA%\Microsoft\Windows\Start Menu\Startup\`)
     - Import a `.reg` file
         ```reg
         Windows Registry Editor Version 5.00
@@ -84,7 +89,7 @@ Even if this program doesn't click the Next button (because an extra choice was 
         ```ps1
         Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name AuthenticatorChooser -Value """C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"""
         ```
-    - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`.
+    - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`
 
 ## Demo
 To test with a sample FIDO authentication prompt, visit [WebAuthn.io](https://webauthn.io) and click the **Authenticate** button.
