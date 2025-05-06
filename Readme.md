@@ -31,7 +31,7 @@ Now it says "To sign in to “`domain`”, choose a device with a saved passkey,
 
 The same problem occurs in Chromium on earlier versions of Windows, such as Windows 10. Chromium offers its own Bluetooth FIDO CTAP as a fallback option when Windows does not provide it natively, and all of the same annoyances manifest here.
 
-<p align="center"><img src="https://private-user-images.githubusercontent.com/1417794/436256002-868a7d8a-0051-4e06-add5-3b2b8eef39a7.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDU2MDIyMzIsIm5iZiI6MTc0NTYwMTkzMiwicGF0aCI6Ii8xNDE3Nzk0LzQzNjI1NjAwMi04NjhhN2Q4YS0wMDUxLTRlMDYtYWRkNS0zYjJiOGVlZjM5YTcucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MDQyNSUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTA0MjVUMTcyNTMyWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9OTZlYWMwNTZkMzI4YmYxYWU1MjY4ZTNmNjM4YjgyY2NjYzNhOWY1MWIwN2M4NDk3OWViZTQ2Mzk5OWQ3MTZmNSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.LJb8Mo8GgP4HVd7aq--hkFuG6Ep7tr4gnTQDsC92iYw" alt="authenticator prompt" width="456" /></p>
+<p align="center"><img src=".github/images/chromium-authenticator-prompt.png" alt="Chromium authenticator prompt" width="452" /></p>
 
 ## Solution
 
@@ -42,9 +42,9 @@ This is a background program that runs headlessly in your Windows user session. 
 Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog box.
 
 ### Overriding the automatic next behavior
-This program does not interfere with local TPM passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides a USB security key and pairing a new Bluetooth smartphone, such as the cases when you already have a paired phone, or you previously declined a Windows Hello factor like a PIN but want to try a PIN again from the authenticator choice dialog. To override this behavior and **_always_** choose the USB security key, even if there are other valid options like Windows Hello PIN/biometrics, pass the command-line argument `--skip-all-non-security-key-options` when starting this program (see [Installation](#installation) for the recommended autostart registry paths).
+By default, this program does not interfere with local TPM passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides a USB security key and pairing a new Bluetooth smartphone, such as the cases when you already have a paired phone, or you previously declined a Windows Hello factor like a PIN but want to try a PIN again from the authenticator choice dialog. However, you may override this behavior if you wish and force it to **_always_** choose the USB security key in all cases, even if there are other valid options like Windows Hello PIN/biometrics, by passing the command-line argument `--skip-all-non-security-key-options` when starting this program (see [Installation](#installation) for the recommended autostart registry paths if you want to change it there).
 
-If a paired phone option appears in the dialog box and you want to remove it, [you can edit the registry if you want to unpair an existing phone](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Unpairing-Bluetooth-smartphone). This is useful if your old phone [bricked itself](https://en.wikipedia.org/wiki/Pixel_5a#Known_issues), or you just upgraded to a new phone.
+If a paired phone option appears in the dialog box and you want to remove it, [you can edit the registry to unpair an existing phone](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Unpairing-Bluetooth-smartphone). This is useful if your old phone [bricked itself](https://en.wikipedia.org/wiki/Pixel_5a#Known_issues), or you just upgraded to a new phone.
 
 If this program skips the authenticator choice dialog when you don't want it to, for example, if you want to use a smartphone Bluetooth passkey only once or infrequently, you can hold <kbd>Shift</kbd> when the dialogs appear to temporarily suppress this program from automatically submitting the security key choice once.
 
@@ -53,8 +53,8 @@ Even if this program doesn't click the Next button (because an extra choice was 
 ## Requirements
 
 - Windows 10 or later
-    - Windows Hello Bluetooth FIDO prompts appear in **[Windows 11 23H2](https://support.microsoft.com/en-us/topic/october-31-2023-kb5031455-os-builds-22621-2506-and-22631-2506-preview-6513c5ec-c5a2-4aaf-97f5-44c13d29e0d4)** and later, and **[Windows 11 22H2 with Moment 4](https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf)**
-    - Chromium Bluetooth FIDO prompts only appear in earlier OS versions such as Windows 10 and Windows 11 21H2
+    - Windows Hello Bluetooth FIDO prompts only appear in **[Windows 11 23H2](https://support.microsoft.com/en-us/topic/october-31-2023-kb5031455-os-builds-22621-2506-and-22631-2506-preview-6513c5ec-c5a2-4aaf-97f5-44c13d29e0d4)** and later, and **[Windows 11 22H2 with Moment 4](https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf)** (2023-09-26).
+    - Chromium Bluetooth FIDO prompts only appear in earlier OS versions, such as Windows 10 and Windows 11 21H2.
 - [**.NET Desktop Runtime** 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime) or later
     - This program is compatible with x64 and ARM64 CPU architectures.
 
