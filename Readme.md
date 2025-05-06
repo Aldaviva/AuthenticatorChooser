@@ -11,6 +11,7 @@
 - [Solution](#solution)
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Building](#building)
 - [Demo](#demo)
 
 <!-- /MarkdownTOC -->
@@ -29,7 +30,7 @@ Now it says "To sign in to “`domain`”, choose a device with a saved passkey,
 
 <p align="center"><img src=".github/images/authenticator-prompt.png" alt="authenticator prompt" width="456" /></p>
 
-The same problem occurs in Chromium on earlier versions of Windows, such as Windows 10. Chromium offers its own Bluetooth FIDO CTAP as a fallback option when Windows does not provide it natively, and all of the same annoyances manifest here.
+The same problem occurs in browsers based upon Chromium on earlier versions of Windows, such as Windows 10. Chromium offers its own Bluetooth FIDO CTAP as a fallback option when Windows does not provide it natively, and all of the same annoyances manifest here.
 
 <p align="center"><img src=".github/images/chromium-authenticator-prompt.png" alt="Chromium authenticator prompt" width="452" /></p>
 
@@ -39,7 +40,7 @@ This is a background program that runs headlessly in your Windows user session. 
 
 <p align="center"><img src=".github/images/demo.gif" alt="demo" width="464" /></p>     
 
-Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog box.
+Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog boxes.
 
 ### Overriding the automatic next behavior
 By default, this program does not interfere with local TPM passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides a USB security key and pairing a new Bluetooth smartphone, such as the cases when you already have a paired phone, or you previously declined a Windows Hello factor like a PIN but want to try a PIN again from the authenticator choice dialog. However, you may override this behavior if you wish and force it to **_always_** choose the USB security key in all cases, even if there are other valid options like Windows Hello PIN/biometrics, by passing the command-line argument `--skip-all-non-security-key-options` when starting this program (see [Installation](#installation) for the recommended autostart registry paths if you want to change it there).
@@ -53,10 +54,12 @@ Even if this program doesn't click the Next button (because an extra choice was 
 ## Requirements
 
 - Windows 10 or later
-    - Windows Hello Bluetooth FIDO prompts only appear in **[Windows 11 23H2](https://support.microsoft.com/en-us/topic/october-31-2023-kb5031455-os-builds-22621-2506-and-22631-2506-preview-6513c5ec-c5a2-4aaf-97f5-44c13d29e0d4)** and later, and **[Windows 11 22H2 with Moment 4](https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf)** (2023-09-26).
-    - Chromium Bluetooth FIDO prompts only appear in earlier OS versions, such as Windows 10 and Windows 11 21H2.
+    - Windows Hello Bluetooth FIDO prompts only appear in **[Windows 11 22H2 Moment 4](https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf)** (2023-09-26), **[Windows 11 23H2](https://support.microsoft.com/en-us/topic/october-31-2023-kb5031455-os-builds-22621-2506-and-22631-2506-preview-6513c5ec-c5a2-4aaf-97f5-44c13d29e0d4)**, and later.
+        - Tested with Windows 11 23H2 and 24H2
+    - Chromium Bluetooth FIDO prompts only appear in Chromium-based browsers on earlier OS versions, such as **Windows 10** and **Windows 11 21H2**.
+        - Tested with [Vivaldi](https://vivaldi.com/desktop/) on Windows 10 22H2
 - [**.NET Desktop Runtime** 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime) or later
-    - This program is compatible with x64 and ARM64 CPU architectures.
+    - This program is compatible with **x64** and **ARM64** CPU architectures and .NET runtimes.
 
 ## Installation
 
@@ -64,14 +67,10 @@ Even if this program doesn't click the Next button (because an extra choice was 
 1. Extract the `AuthenticatorChooser.exe` file from the ZIP archive to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
-1. Register the program to run automatically on user logon with **any one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2. If you'd like to specify additional command-line arguments like `--skip-all-non-security-key-options`, you can do that here.
+1. Register the program to run automatically on user logon with **any one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2. If you'd like to specify additional command-line arguments like `--skip-all-non-security-key-options`, you can do that here too.
     - Run this program once with the `--autostart-on-logon` argument
         ```ps1
         .\AuthenticatorChooser --autostart-on-logon
-        ```
-        That will register it as a startup program and then immediately exit, so if you want to also start the program without having to log out or reboot, run it again without the `--autostart-on-logon` argument:
-        ```ps1
-        .\AuthenticatorChooser
         ```
     - Add a shortcut to `AuthenticatorChooser.exe` in the Startup folder (`%APPDATA%\Microsoft\Windows\Start Menu\Startup\`)
     - Import a `.reg` file
@@ -90,6 +89,29 @@ Even if this program doesn't click the Next button (because an extra choice was 
         Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name AuthenticatorChooser -Value """C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"""
         ```
     - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`
+
+## Building
+
+If you want to build this application yourself instead of downloading precompiled binaries from the [releases](https://github.com/Aldaviva/AuthenticatorChooser/releases) page, you can follow these steps.
+
+1. Install the [latest stable .NET SDK](https://dotnet.microsoft.com/en-us/download) (8 or later).
+1. Clone this repository.
+    ```ps1
+    git clone "https://github.com/Aldaviva/AuthenticatorChooser.git"
+    ```
+1. Go to the project directory.
+    ```ps1
+    cd .\AuthenticatorChooser\AuthenticatorChooser\
+    ```
+1. Build the program.
+    ```ps1
+    dotnet publish -p:PublishSingleFile=true
+    ```
+
+The program will be compiled to the following path, assuming your CPU architecture is x64.
+```text
+.\bin\Release\net8.0-windows\win-x64\publish\AuthenticatorChooser.exe
+```
 
 ## Demo
 To test with a sample FIDO authentication prompt, visit [WebAuthn.io](https://webauthn.io) and click the **Authenticate** button.
