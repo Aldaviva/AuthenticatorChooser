@@ -1,4 +1,4 @@
-<!--EXTERNAL_PROPERTIES: GITHUB_ACTIONS-->
+﻿<!--EXTERNAL_PROPERTIES: GITHUB_ACTIONS-->
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
@@ -31,7 +31,7 @@
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
         <PackageReference Include="NLog" Version="5.4.0" />
-        <PackageReference Include="System.Management" Version="9.0.4" />
+        <PackageReference Include="System.Management" Version="9.0.5" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta2" />
         <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.1" />
         <PackageReference Include="Workshell.PE.Resources" Version="4.0.0.147" />
