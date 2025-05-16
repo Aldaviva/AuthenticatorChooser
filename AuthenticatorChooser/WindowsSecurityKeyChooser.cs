@@ -36,15 +36,15 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
             AutomationElement? outerScrollViewer = fidoEl?.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.ClassNameProperty, "ScrollViewer"));
             if (outerScrollViewer?.FindFirst(TreeScope.Children, new AndCondition(
                     new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock"),
-                    singletonSafePropertyCondition(AutomationElement.NameProperty, false, I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY)))) == null) { // #4
+                    singletonSafePropertyCondition(AutomationElement.NameProperty, false,
+                        I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Concat(skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : [])))) == null) { // #4, #15
                 LOGGER.Debug("Window is not a passkey choice prompt");
                 return;
             }
 
             LOGGER.Trace("Window 0x{hwnd:x} is a Windows Security window", fidoPrompt.HWnd);
 
-            Condition           credentialsListIdCondition    = new PropertyCondition(AutomationElement.AutomationIdProperty, "CredentialsList");
-            IEnumerable<string> securityKeyLabelPossibilities = I18N.getStrings(I18N.Key.SECURITY_KEY);
+            Condition credentialsListIdCondition = new PropertyCondition(AutomationElement.AutomationIdProperty, "CredentialsList");
 
             Stopwatch                      authenticatorChoicesStopwatch = Stopwatch.StartNew();
             ICollection<AutomationElement> authenticatorChoices;
@@ -59,26 +59,41 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
                 return;
             }
 
-            AutomationElement? securityKeyChoice = authenticatorChoices.FirstOrDefault(choice => nameContainsAny(choice, securityKeyLabelPossibilities));
-            if (securityKeyChoice == null) {
-                LOGGER.Debug("USB security key is not a choice, skipping");
+            bool isLocalWindowsHelloTpmPrompt = false;
+
+            AutomationElement? desiredChoice = authenticatorChoices.FirstOrDefault(choice => nameContainsAny(choice, I18N.getStrings(I18N.Key.SECURITY_KEY)));
+            if (desiredChoice == null && skipAllNonSecurityKeyOptions) {
+                desiredChoice                = authenticatorChoices.FirstOrDefault(choice => nameContainsAny(choice, I18N.getStrings(I18N.Key.USE_ANOTHER_DEVICE))); // #15
+                isLocalWindowsHelloTpmPrompt = desiredChoice != null;
+            }
+
+            if (desiredChoice == null) {
+                LOGGER.Debug("Desired choice not found, skipping");
                 return;
             }
 
-            ((SelectionItemPattern) securityKeyChoice.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
-            LOGGER.Info("USB security key selected");
+            bool isShiftDown = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 
-            AutomationElement nextButton = fidoEl!.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton"))!;
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
+            if (!isLocalWindowsHelloTpmPrompt || !isShiftDown) {
+                ((SelectionItemPattern) desiredChoice.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
+                if (isLocalWindowsHelloTpmPrompt) {
+                    LOGGER.Info("Use another device selected after {0:N3} sec", overallStopwatch.Elapsed.TotalSeconds);
+                    return;
+                } else {
+                    LOGGER.Info("USB security key selected");
+                }
+            }
+
+            AutomationElement nextButton = fidoEl!.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton"));
+            if (isShiftDown) {
                 nextButton.SetFocus();
                 LOGGER.Info("Shift is pressed, not submitting dialog box");
-            } else if (!skipAllNonSecurityKeyOptions && !authenticatorChoices.All(choice => choice == securityKeyChoice || nameContainsAny(choice, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
+            } else if (!skipAllNonSecurityKeyOptions && !authenticatorChoices.All(choice => choice == desiredChoice || nameContainsAny(choice, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
                 nextButton.SetFocus();
                 LOGGER.Info(
                     "Dialog box has a choice that is neither pairing a new phone nor USB security key (such as an existing phone, PIN, or biometrics), skipping because the user might want to choose it. You may override this behavior with --skip-all-non-security-key-options.");
             } else {
                 ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
-                overallStopwatch.Stop();
                 LOGGER.Info("Next button pressed after {0:N3} sec", overallStopwatch.Elapsed.TotalSeconds);
             }
         } catch (COMException e) {

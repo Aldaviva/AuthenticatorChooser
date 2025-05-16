@@ -13,10 +13,35 @@ public static partial class I18N {
 
     public enum Key {
 
+        /// <summary>
+        /// Security key
+        /// </summary>
         SECURITY_KEY,
+
+        /// <summary>
+        /// iPhone, iPad, or Android device
+        /// </summary>
         SMARTPHONE,
+
+        /// <summary>
+        /// This Windows device
+        /// </summary>
         WINDOWS,
+
+        /// <summary>
+        /// Sign in with your passkey
+        /// </summary>
         SIGN_IN_WITH_YOUR_PASSKEY,
+
+        /// <summary>
+        /// Use another device
+        /// </summary>
+        USE_ANOTHER_DEVICE,
+
+        /// <summary>
+        /// Making sure it’s you
+        /// </summary>
+        MAKING_SURE_ITS_YOU
 
     }
 
@@ -37,6 +62,8 @@ public static partial class I18N {
             [Key.SMARTPHONE] = getStrings(nameof(LocalizedStrings.smartphone), fidoCredProvMuiPath, 15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
             [Key.WINDOWS] = getStrings(nameof(LocalizedStrings.windows), fidoCredProvMuiPath, 15, 232), // Windows
             [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithYourPasskey), webAuthnMuiPath, 4, 53), // Sign In With Your Passkey title; entry 63 has the same value
+            [Key.USE_ANOTHER_DEVICE] = getStrings(nameof(LocalizedStrings.useAnotherDevice), fidoCredProvMuiPath, 15, 234), // Use another device
+            [Key.MAKING_SURE_ITS_YOU] = getStrings(nameof(LocalizedStrings.makingSureItsYou), ngcCredProvMuiPath, 35, 554), // Making sure it’s you
         }.ToFrozenDictionary();
 
         foreach (PortableExecutableImage? dllFile in DLL_CACHE.Values) {
@@ -48,6 +75,7 @@ public static partial class I18N {
 
         string fidoCredProvMuiPath(string locale) => Path.Combine(systemRoot, "System32", locale, "fidocredprov.dll.mui");
         string webAuthnMuiPath(string locale) => Path.Combine(systemRoot, "System32", locale, "webauthn.dll.mui");
+        string ngcCredProvMuiPath(string locale) => Path.Combine(systemRoot, "System32", locale, "ngccredprov.dll.mui");
     }
 
     public static IEnumerable<string> getStrings(Key key) => STRINGS[key];
