@@ -1,4 +1,4 @@
-﻿using AuthenticatorChooser.Resources;
+using AuthenticatorChooser.Resources;
 using System.Collections.Frozen;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -13,15 +13,10 @@ public static partial class I18N {
 
     public enum Key {
 
-        // Windows
         SECURITY_KEY,
         SMARTPHONE,
         WINDOWS,
         SIGN_IN_WITH_YOUR_PASSKEY,
-
-        // Chromium
-        USE_A_SAVED_PASSKEY_FOR,
-        WINDOWS_HELLO_OR_EXTERNAL_SECURITY_KEY
 
     }
 
@@ -42,8 +37,6 @@ public static partial class I18N {
             [Key.SMARTPHONE] = getStrings(nameof(LocalizedStrings.smartphone), fidoCredProvMuiPath, 15, 231), // Smartphone; also appears in webauthn.dll.mui string table 4 entries 50 and 56
             [Key.WINDOWS] = getStrings(nameof(LocalizedStrings.windows), fidoCredProvMuiPath, 15, 232), // Windows
             [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithYourPasskey), webAuthnMuiPath, 4, 53), // Sign In With Your Passkey title; entry 63 has the same value
-            [Key.USE_A_SAVED_PASSKEY_FOR] = getStrings(nameof(LocalizedStrings.useASavedPasskeyFor)).ToList(),
-            [Key.WINDOWS_HELLO_OR_EXTERNAL_SECURITY_KEY] = getStrings(nameof(LocalizedStrings.windowsHelloOrExternalSecurityKey)).ToList()
         }.ToFrozenDictionary();
 
         foreach (PortableExecutableImage? dllFile in DLL_CACHE.Values) {

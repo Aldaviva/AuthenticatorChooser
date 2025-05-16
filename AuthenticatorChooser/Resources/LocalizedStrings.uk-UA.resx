@@ -13,15 +13,15 @@
     <value>2.0</value>
   </resheader>
   <data name="securityKey" xml:space="preserve">
-    <value>Chave de segurança</value>
+    <value>Ключ безпеки</value>
   </data>
   <data name="smartphone" xml:space="preserve">
-    <value>Dispositivos iPhone, iPad ou Android</value>
+    <value>iPhone, iPad або пристрій з Android</value>
   </data>
   <data name="windows" xml:space="preserve">
-    <value>Este dispositivo Windows</value>
+    <value>Цей пристрій Windows</value>
   </data>
   <data name="signInWithYourPasskey" xml:space="preserve">
-    <value>Inicie sessão com a sua chave de acesso</value>
+    <value>Увійдіть за допомогою ключа доступу</value>
   </data>
 </root>

@@ -11,8 +11,8 @@
 - [Solution](#solution)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Building](#building)
 - [Demo](#demo)
+- [Building](#building)
 
 <!-- /MarkdownTOC -->
 
@@ -30,13 +30,9 @@ Now it says "To sign in to “`domain`”, choose a device with a saved passkey,
 
 <p align="center"><img src=".github/images/authenticator-prompt.png" alt="authenticator prompt" width="456" /></p>
 
-The same problem occurs in browsers based upon Chromium on earlier versions of Windows, such as Windows 10. Chromium offers its own Bluetooth FIDO CTAP as a fallback option when Windows does not provide it natively, and all of the same annoyances manifest here.
-
-<p align="center"><img src=".github/images/chromium-authenticator-prompt.png" alt="Chromium authenticator prompt" width="452" /></p>
-
 ## Solution
 
-This is a background program that runs headlessly in your Windows user session. It waits for Windows or Chromium FIDO credential provider prompts to appear, then chooses the Security Key option and clicks Next for you automatically. From the user's perspective, the Bluetooth screen barely even appears before it's replaced with the prompt to plug in your USB security key.
+This is a background program that runs headlessly in your Windows user session. It waits for Windows FIDO credential provider prompts to appear, then chooses the Security Key option and clicks Next for you automatically. From the user's perspective, the Bluetooth screen barely even appears before it's replaced with the prompt to plug in your USB security key.
 
 <p align="center"><img src=".github/images/demo.gif" alt="demo" width="464" /></p>     
 
@@ -53,12 +49,8 @@ Even if this program doesn't click the Next button (because an extra choice was 
 
 ## Requirements
 
-- Windows 10 or later
-    - Windows Hello Bluetooth FIDO prompts only appear in **[Windows 11 22H2 Moment 4](https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf)** (2023-09-26), **[Windows 11 23H2](https://support.microsoft.com/en-us/topic/october-31-2023-kb5031455-os-builds-22621-2506-and-22631-2506-preview-6513c5ec-c5a2-4aaf-97f5-44c13d29e0d4)**, and later.
-        - Tested with Windows 11 23H2 and 24H2
-    - Chromium Bluetooth FIDO prompts only appear in Chromium-based browsers on earlier OS versions, such as **Windows 10** and **Windows 11 21H2**.
-        - Tested with [Vivaldi](https://vivaldi.com/desktop/) on Windows 10 22H2
-- [**.NET Desktop Runtime** 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime) or later
+- Windows 11 [23H2](https://support.microsoft.com/en-us/topic/october-31-2023-kb5031455-os-builds-22621-2506-and-22631-2506-preview-6513c5ec-c5a2-4aaf-97f5-44c13d29e0d4) or later, or [22H2 Moment 4](https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf)
+- [.NET Desktop Runtime 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime) or later
     - This program is compatible with **x64** and **ARM64** CPU architectures and .NET runtimes.
 
 ## Installation
@@ -90,6 +82,9 @@ Even if this program doesn't click the Next button (because an extra choice was 
         ```
     - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`
 
+## Demo
+To test with a sample FIDO authentication prompt, visit [WebAuthn.io](https://webauthn.io) and click the **Authenticate** button.
+
 ## Building
 
 If you want to build this application yourself instead of downloading precompiled binaries from the [releases](https://github.com/Aldaviva/AuthenticatorChooser/releases) page, you can follow these steps.
@@ -112,6 +107,3 @@ The program will be compiled to the following path, assuming your CPU architectu
 ```text
 .\bin\Release\net8.0-windows\win-x64\publish\AuthenticatorChooser.exe
 ```
-
-## Demo
-To test with a sample FIDO authentication prompt, visit [WebAuthn.io](https://webauthn.io) and click the **Authenticate** button.

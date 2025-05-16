@@ -13,15 +13,15 @@
     <value>2.0</value>
   </resheader>
   <data name="securityKey" xml:space="preserve">
-    <value>Chave de segurança</value>
+    <value>مفتاح الأمان</value>
   </data>
   <data name="smartphone" xml:space="preserve">
-    <value>Dispositivos iPhone, iPad ou Android</value>
+    <value>جهاز iPhone أو iPad أو Android</value>
   </data>
   <data name="windows" xml:space="preserve">
-    <value>Este dispositivo Windows</value>
+    <value>جهاز Windows هذا</value>
   </data>
   <data name="signInWithYourPasskey" xml:space="preserve">
-    <value>Inicie sessão com a sua chave de acesso</value>
+    <value>تسجيل الدخول باستخدام رمز المرور الخاص بك</value>
   </data>
 </root>

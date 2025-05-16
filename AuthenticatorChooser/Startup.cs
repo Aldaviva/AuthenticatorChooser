@@ -1,4 +1,4 @@
-﻿using AuthenticatorChooser.WindowOpening;
+using AuthenticatorChooser.WindowOpening;
 using ManagedWinapi.Windows;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Conventions;
@@ -7,9 +7,7 @@ using NLog;
 using System.Reflection;
 using System.Security.Principal;
 using System.Text;
-using System.Windows.Automation;
 using System.Windows.Forms;
-using Unfucked;
 
 // ReSharper disable ClassNeverInstantiated.Global - it's actually instantiated by McMaster.Extensions.CommandLineUtils
 // ReSharper disable UnassignedGetOnlyAutoProperty - it's actually assigned by McMaster.Extensions.CommandLineUtils
@@ -20,10 +18,7 @@ public class Startup {
 
     private const string PROGRAM_NAME = nameof(AuthenticatorChooser);
 
-    // https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf
-    // ReSharper disable once InconsistentNaming - the version is literally called 22H2
-    private static readonly Version WINDOWS_11_22H2_MOMENT4 = new(10, 0, 22621, 2361);
-    private static readonly string  PROGRAM_VERSION         = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
+    private static readonly string PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
 
     private static Logger? logger;
 
@@ -76,32 +71,15 @@ public class Startup {
                 logger.Info("{Locales are} {locales}", I18N.LOCALE_NAMES.Count == 1 ? "Locale is" : "Locales are", string.Join(", ", I18N.LOCALE_NAMES));
 
                 using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
+                WindowsSecurityKeyChooser   securityKeyChooser    = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
 
-                bool hasOsBluetoothCtap = os.version >= WINDOWS_11_22H2_MOMENT4;
-                if (hasOsBluetoothCtap) {
-                    WindowsSecurityKeyChooser securityKeyChooser = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
+                windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
 
-                    windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
-
-                    foreach (SystemWindow fidoPromptWindow in SystemWindow.FilterToplevelWindows(securityKeyChooser.isFidoPromptWindow)) {
-                        securityKeyChooser.chooseUsbSecurityKey(fidoPromptWindow);
-                    }
-
-                    logger.Info("Waiting for Windows Security FIDO dialog boxes to open");
-                } else {
-                    ChromiumSecurityKeyChooser securityKeyChooser     = new() { mostRecentAutomationEventFired = windowOpeningListener.mostRecentAutomationEventReceived };
-                    SynchronizationContext     synchronizationContext = new WindowsFormsSynchronizationContext(); // Checking keyboard state must run on the UI thread
-
-                    windowOpeningListener.automationElementMaybeOpened += (_, child) => synchronizationContext.Post(_ => securityKeyChooser.chooseUsbSecurityKey(child), null);
-                    windowOpeningListener.listenForOpenedChildAutomationElements(ChromiumSecurityKeyChooser.PARENT_WINDOW_CLASS);
-
-                    foreach (AutomationElement chromeChildEl in SystemWindow.FilterToplevelWindows(securityKeyChooser.isFidoPromptWindow)
-                                 .SelectMany(chrome => chrome.ToAutomationElement()?.Children() ?? [])) {
-                        securityKeyChooser.chooseUsbSecurityKey(chromeChildEl);
-                    }
-
-                    logger.Info("Waiting for Chromium FIDO dialog boxes to open");
+                foreach (SystemWindow fidoPromptWindow in SystemWindow.FilterToplevelWindows(securityKeyChooser.isFidoPromptWindow)) {
+                    securityKeyChooser.chooseUsbSecurityKey(fidoPromptWindow);
                 }
+
+                logger.Info("Waiting for Windows Security FIDO dialog boxes to open");
 
                 _ = I18N.getStrings(I18N.Key.SMARTPHONE); // ensure localization is loaded eagerly
 

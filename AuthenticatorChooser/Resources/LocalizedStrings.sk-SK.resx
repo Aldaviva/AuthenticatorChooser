@@ -13,15 +13,15 @@
     <value>2.0</value>
   </resheader>
   <data name="securityKey" xml:space="preserve">
-    <value>Chave de segurança</value>
+    <value>Kľúč zabezpečenia</value>
   </data>
   <data name="smartphone" xml:space="preserve">
-    <value>Dispositivos iPhone, iPad ou Android</value>
+    <value>iPhone, iPad alebo zariadenie s Androidom</value>
   </data>
   <data name="windows" xml:space="preserve">
-    <value>Este dispositivo Windows</value>
+    <value>Toto zariadenie s Windowsom</value>
   </data>
   <data name="signInWithYourPasskey" xml:space="preserve">
-    <value>Inicie sessão com a sua chave de acesso</value>
+    <value>Prihláste sa pomocou prístupového kľúča</value>
   </data>
 </root>

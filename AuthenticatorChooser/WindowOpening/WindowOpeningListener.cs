@@ -1,4 +1,4 @@
-﻿using ManagedWinapi.Windows;
+using ManagedWinapi.Windows;
 using NLog;
 using System.Collections.Concurrent;
 using System.Diagnostics;
