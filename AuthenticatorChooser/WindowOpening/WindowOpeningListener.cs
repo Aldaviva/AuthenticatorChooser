@@ -1,4 +1,4 @@
-﻿using ManagedWinapi.Windows;
+using ManagedWinapi.Windows;
 using NLog;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -49,17 +49,21 @@ public class WindowOpeningListenerImpl: WindowOpeningListener {
                     parents.Add(windowEl);
                 }
                 listenForOpenedChildAutomationElements(windowEl);
+                LOGGER.Debug("Window with class {class} opened, listening for child automation events", className);
             }
         }
     }
 
     public void listenForOpenedChildAutomationElements(string parentClass) {
         mostRecentAutomationEventReceived.Restart();
+        ISet<AutomationElement> parents = watchedParentsByClass.GetOrAdd(parentClass, []);
         foreach (SystemWindow parent in SystemWindow.FilterToplevelWindows(window => window.ClassName == parentClass)) {
             if (parent.ToAutomationElement() is not { } parentEl) continue;
 
             listenForOpenedChildAutomationElements(parentEl);
-            watchedParentsByClass.GetOrAdd(parentClass, []).Add(parentEl);
+            lock (parents) {
+                parents.Add(parentEl);
+            }
 
             foreach (AutomationElement child in parentEl.Children()) {
                 automationElementMaybeOpened?.Invoke(this, child);
@@ -68,7 +72,7 @@ public class WindowOpeningListenerImpl: WindowOpeningListener {
     }
 
     private void listenForOpenedChildAutomationElements(AutomationElement parent) {
-        Automation.AddStructureChangedEventHandler(parent, TreeScope.Descendants, onChildStructureChanged);
+        Automation.AddStructureChangedEventHandler(parent, TreeScope.Children, onChildStructureChanged);
         Automation.AddAutomationEventHandler(WindowPattern.WindowClosedEvent, parent, TreeScope.Element, onWindowClosed);
     }
 
@@ -81,6 +85,7 @@ public class WindowOpeningListenerImpl: WindowOpeningListener {
         mostRecentAutomationEventReceived.Restart();
         LOGGER.Trace("Received {change} event", (e as StructureChangedEventArgs)?.StructureChangeType);
         // For some reason Chromium 134 stopped emitting ChildAdded events and only fires a ChildrenReordered event when the FIDO dialog appears, not sure why
+        // It's worse than that, now it doesn't fire any events reliably
         if (e is StructureChangedEventArgs { StructureChangeType: StructureChangeType.ChildAdded or StructureChangeType.ChildrenBulkAdded or StructureChangeType.ChildrenReordered } args) {
             throttledChildStructureChanged.Invoke(args);
         }

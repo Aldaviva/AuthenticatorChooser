@@ -1,4 +1,4 @@
-﻿using ManagedWinapi.Windows;
+using ManagedWinapi.Windows;
 using NLog;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -33,7 +33,6 @@ public class ChromiumSecurityKeyChooser: AbstractSecurityKeyChooser<AutomationEl
             if (securityKeyButton == null) {
                 LOGGER.Warn("Could not find security key button in FIDO dialog box");
             } else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
-                securityKeyButton.SetFocus();
                 LOGGER.Info("Shift is pressed, not submitting dialog box");
             } else {
                 ((InvokePattern) securityKeyButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
@@ -41,7 +40,7 @@ public class ChromiumSecurityKeyChooser: AbstractSecurityKeyChooser<AutomationEl
             }
         } catch (COMException e) {
             LOGGER.Warn(e, "UI Automation error while selecting security key, skipping this dialog box instance");
-        }
+        } catch (ElementNotEnabledException) { }
     }
 
     public override bool isFidoPromptWindow(SystemWindow window) => window.ClassName == PARENT_WINDOW_CLASS;
