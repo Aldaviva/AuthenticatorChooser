@@ -15,7 +15,7 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
     private const string WINDOW_CLASS_NAME  = "Credential Dialog Xaml Host";
     private const string ALT_TAB_CLASS_NAME = "XamlExplorerHostIslandWindow";
 
-    private static readonly Logger LOGGER = LogManager.GetCurrentClassLogger();
+    private static readonly Logger LOGGER = LogManager.GetLogger(typeof(WindowsSecurityKeyChooser).FullName);
 
     public bool skipAllNonSecurityKeyOptions { get; init; }
 
@@ -54,7 +54,7 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
                     maxAttempts: 127, delay: Retrier.Delays.Power(TimeSpan.FromMilliseconds(1), max: TimeSpan.FromMilliseconds(500)));
                 LOGGER.Trace("Found authenticator choices after {0:N3} sec", authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
             } catch (Exception e) when (e is not OutOfMemoryException) {
-                LOGGER.Error(e, "Could not find authenticator choices after retrying for {0:N3} sec due to the following exception. Giving up and not automatically selecting Security Key.",
+                LOGGER.Warn(e, "Could not find authenticator choices after retrying for {0:N3} sec due to the following exception. Giving up and not automatically selecting Security Key.",
                     authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
                 return;
             }
@@ -74,18 +74,19 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
 
             bool isShiftDown = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 
-            if (!isLocalWindowsHelloTpmPrompt || !isShiftDown) {
+            if (!(isLocalWindowsHelloTpmPrompt && isShiftDown)) {
                 ((SelectionItemPattern) desiredChoice.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
-                if (isLocalWindowsHelloTpmPrompt) {
-                    LOGGER.Info("Use another device selected after {0:N3} sec", overallStopwatch.Elapsed.TotalSeconds);
-                    return;
-                } else {
-                    LOGGER.Info("USB security key selected");
-                }
+                LOGGER.Info("{choice} selected after {0:N3} sec", isLocalWindowsHelloTpmPrompt ? "Use another device" : "USB security key", overallStopwatch.Elapsed.TotalSeconds);
             }
 
-            AutomationElement nextButton = fidoEl!.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton"));
-            if (isShiftDown) {
+            if (isLocalWindowsHelloTpmPrompt) {
+                return;
+            }
+
+            AutomationElement? nextButton = fidoEl!.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton"));
+            if (nextButton == null) {
+                LOGGER.Error("Could not find Next button in Windows Security dialog box, skipping this dialog box instance");
+            } else if (isShiftDown) {
                 nextButton.SetFocus();
                 LOGGER.Info("Shift is pressed, not submitting dialog box");
             } else if (!skipAllNonSecurityKeyOptions && !authenticatorChoices.All(choice => choice == desiredChoice || nameContainsAny(choice, I18N.getStrings(I18N.Key.SMARTPHONE)))) {
@@ -97,7 +98,7 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
                 LOGGER.Info("Next button pressed after {0:N3} sec", overallStopwatch.Elapsed.TotalSeconds);
             }
         } catch (COMException e) {
-            LOGGER.Warn(e, "UI Automation error while selecting security key, skipping this dialog box instance");
+            LOGGER.Error(e, "UI Automation error while selecting security key, skipping this dialog box instance");
         }
     }
 

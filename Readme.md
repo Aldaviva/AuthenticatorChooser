@@ -39,6 +39,7 @@ This is a background program that runs headlessly in your Windows user session. 
 Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog boxes.
 
 ### Overriding the automatic next behavior
+
 By default, this program does not interfere with local TPM passkey prompts (like requesting your Windows Hello PIN or biometrics). It also does not automatically submit FIDO prompts that contain additional options besides a USB security key and pairing a new Bluetooth smartphone, such as the cases when you already have a paired phone, or you previously declined a Windows Hello factor like a PIN but want to try a PIN again from the authenticator choice dialog. However, you may override this behavior if you wish and force it to **_always_** choose the USB security key in all cases, even if there are other valid options like Windows Hello PIN/biometrics, by passing the command-line argument `--skip-all-non-security-key-options` when starting this program (see [Installation](#installation) for the recommended autostart registry paths if you want to change it there).
 
 If a paired phone option appears in the dialog box and you want to remove it, [you can edit the registry to unpair an existing phone](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Unpairing-Bluetooth-smartphone). This is useful if your old phone [bricked itself](https://en.wikipedia.org/wiki/Pixel_5a#Known_issues), or you just upgraded to a new phone.
@@ -83,6 +84,7 @@ Even if this program doesn't click the Next button (because an extra choice was 
     - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`
 
 ## Demo
+
 To test with a sample FIDO authentication prompt, visit [WebAuthn.io](https://webauthn.io) and click the **Authenticate** button.
 
 ## Building
@@ -98,6 +100,10 @@ If you want to build this application yourself instead of downloading precompile
     ```ps1
     cd .\AuthenticatorChooser\AuthenticatorChooser\
     ```
+1. Choose one of the [version tags](https://github.com/Aldaviva/AuthenticatorChooser/tags) to build, or skip this step to use the latest commit.
+    ```ps1
+    git checkout 0.2.0
+    ```
 1. Build the program.
     ```ps1
     dotnet publish -p:PublishSingleFile=true
@@ -107,3 +113,6 @@ The program will be compiled to the following path, assuming your CPU architectu
 ```text
 .\bin\Release\net8.0-windows\win-x64\publish\AuthenticatorChooser.exe
 ```
+
+You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 instead of the command line. 
+- Visual Studio Publishing Profiles have been broken for years unless certain other workloads (like ASP.NET Web Development) are installed, so if you can't publish from VS you'll have to use the `dotnet publish` command above.

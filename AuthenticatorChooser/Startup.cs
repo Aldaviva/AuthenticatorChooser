@@ -46,7 +46,7 @@ public class Startup {
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 
         Logging.initialize(log.enabled, log.filename);
-        logger = LogManager.GetCurrentClassLogger();
+        logger = LogManager.GetLogger(typeof(Startup).FullName);
 
         try {
             if (help) {
