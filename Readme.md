@@ -102,7 +102,7 @@ If you want to build this application yourself instead of downloading precompile
     ```
 1. Choose one of the [version tags](https://github.com/Aldaviva/AuthenticatorChooser/tags) to build, or skip this step to use the latest commit.
     ```ps1
-    git checkout 0.2.0
+    git checkout 0.3.0
     ```
 1. Build the program.
     ```ps1
