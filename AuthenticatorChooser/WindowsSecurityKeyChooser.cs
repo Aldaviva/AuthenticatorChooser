@@ -34,11 +34,16 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
 
             AutomationElement? fidoEl            = fidoPrompt.ToAutomationElement();
             AutomationElement? outerScrollViewer = fidoEl?.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.ClassNameProperty, "ScrollViewer"));
+            if (outerScrollViewer == null) {
+                LOGGER.Debug("Window is not a passkey choice prompt because it does not have a ScrollViewer child");
+                return;
+            }
+            IEnumerable<string> expectedTextBlockNames =
+                I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Concat(skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : []).ToList();
             if (outerScrollViewer?.FindFirst(TreeScope.Children, new AndCondition(
                     new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock"),
-                    singletonSafePropertyCondition(AutomationElement.NameProperty, false,
-                        I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Concat(skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : [])))) == null) { // #4, #15
-                LOGGER.Debug("Window is not a passkey choice prompt");
+                    singletonSafePropertyCondition(AutomationElement.NameProperty, false, expectedTextBlockNames))) == null) { // #4, #15
+                LOGGER.Debug("Window is not a passkey choice prompt because there is no TextBlock child of the ScrollViewer which has the name " + string.Join(" or ", expectedTextBlockNames));
                 return;
             }
 
