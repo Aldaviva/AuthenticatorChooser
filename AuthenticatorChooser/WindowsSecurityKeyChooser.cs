@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Automation;
 using System.Windows.Input;
-using ThrottleDebounce;
 using Unfucked;
 
 namespace AuthenticatorChooser;
@@ -46,10 +45,9 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
             }
 
             IEnumerable<string> expectedTitles = I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Concat(skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : []).ToList();
-            try {
-                // #21: title not rendered immediately
-                AutomationElement titleLabel  = retry(() => outerScrollViewer.FindFirst(TreeScope.Children, TITLE_CONDITION) ?? throw new NullReferenceException(), 18); // #4, #15
-                string?           actualTitle = titleLabel.GetCurrentPropertyValue(AutomationElement.NameProperty) as string;
+            // #21: title not rendered immediately
+            if (outerScrollViewer.WaitForFirst(TreeScope.Children, TITLE_CONDITION, TimeSpan.FromSeconds(5)) is { } titleLabel) {
+                string? actualTitle = titleLabel.GetCurrentPropertyValue(AutomationElement.NameProperty) as string;
                 if (expectedTitles.Any(expected => expected.Equals(actualTitle, StringComparison.CurrentCulture))) {
                     LOGGER.Trace("Found dialog title {0:N3} sec after dialog opened", overallStopwatch.Elapsed.TotalSeconds);
                 } else {
@@ -57,20 +55,19 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
                         string.Join(" or ", expectedTitles));
                     return;
                 }
-            } catch (NullReferenceException) {
+            } else {
                 LOGGER.Debug("Window is not a passkey choice prompt because there is no TextBlock child of the ScrollViewer after retrying for {0:N3}", overallStopwatch.Elapsed.TotalSeconds);
                 return;
             }
 
             LOGGER.Trace("Window 0x{hwnd:x} is a Windows Security window", fidoPrompt.HWnd);
 
-            Stopwatch                      authenticatorChoicesStopwatch = Stopwatch.StartNew();
-            ICollection<AutomationElement> authenticatorChoices;
-            try {
-                authenticatorChoices = retry(() => outerScrollViewer.FindFirst(TreeScope.Children, CREDENTIALS_LIST_ID_CONDITION).Children().ToList(), 127);
+            Stopwatch authenticatorChoicesStopwatch = Stopwatch.StartNew();
+            // #5, #11: power series backoff, max=500 ms per attempt, ~1 minute total
+            if (outerScrollViewer.WaitForFirst(TreeScope.Children, CREDENTIALS_LIST_ID_CONDITION, el => el.Children().ToList(), TimeSpan.FromMinutes(1)) is { } authenticatorChoices) {
                 LOGGER.Trace("Found authenticator choices after retrying for {0:N3} sec", authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
-            } catch (Exception e) when (e is not OutOfMemoryException) {
-                LOGGER.Warn(e, "Could not find authenticator choices after retrying for {0:N3} sec due to the following exception. Giving up and not automatically selecting Security Key.",
+            } else {
+                LOGGER.Warn("Could not find authenticator choices after retrying for {0:N3} sec due to the following exception. Giving up and not automatically selecting Security Key.",
                     authenticatorChoicesStopwatch.Elapsed.TotalSeconds);
                 return;
             }
@@ -113,16 +110,14 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
                 ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
                 LOGGER.Info("Next button pressed {0:N3} sec after dialog appeared", overallStopwatch.Elapsed.TotalSeconds);
             }
+        } catch (ElementNotAvailableException e) {
+            LOGGER.Error(e, "Element in Windows Security dialog box disappeared before this program could interact with it, skipping this dialog box instance");
         } catch (COMException e) {
             LOGGER.Error(e, "UI Automation error while selecting security key, skipping this dialog box instance");
         } catch (Exception e) when (e is not OutOfMemoryException) {
             LOGGER.Error(e, "Uncaught exception while handling Windows Security dialog box, skipping it");
         }
     }
-
-    // #5, #11: power series backoff, max=500 ms per attempt, ~1 minute total
-    private static T retry<T>(Func<T> attempt, int maxAttempts) =>
-        Retrier.Attempt(_ => attempt(), maxAttempts, Retrier.Delays.Power(TimeSpan.FromMilliseconds(1), max: TimeSpan.FromMilliseconds(500)));
 
     // Window name and title are localized, so don't match against those
     public override bool isFidoPromptWindow(SystemWindow window) => window.ClassName == WINDOW_CLASS_NAME;

@@ -22,9 +22,9 @@
       },
       "NLog": {
         "type": "Direct",
-        "requested": "[5.4.0, )",
-        "resolved": "5.4.0",
-        "contentHash": "LwMcGSW3soF3/SL68rlJN3Eh3ktrAPycC3zZR/07OYBPraZUu0bygEC7kIN10lUQgMXT4s84Fi1chglGdGrQEg=="
+        "requested": "[5.5.0, )",
+        "resolved": "5.5.0",
+        "contentHash": "FCH8s7GWlonH5JXV9/EpeNJ8pRZQMVZOSWX3JrHPU8rzdHJhS5+lUGGvJIUOtzkGV1clYBFR0WXOI5FnUwVCMA=="
       },
       "System.Management": {
         "type": "Direct",
@@ -37,17 +37,18 @@
       },
       "ThrottleDebounce": {
         "type": "Direct",
-        "requested": "[3.0.0-beta2, )",
-        "resolved": "3.0.0-beta2",
-        "contentHash": "VHkd+bDkUGBP9+PIARIgKAiczlrItAq2x/zmLMnuIbwI8QDXPUvIYoOQbyGmKVdgODC6V37a0FT4eIhwESPWjA=="
+        "requested": "[3.0.0-beta3, )",
+        "resolved": "3.0.0-beta3",
+        "contentHash": "pZTefK4xZEvc5Q+M63lIAKVl8ZDsPWiUvuFk1+d9q3Hmgme76P3qC07Ho40ccaUiUKQYnO3a/dnu/SD8CsPZqQ=="
       },
       "Unfucked.Windows": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.1, )",
-        "resolved": "0.0.1-beta.1",
-        "contentHash": "w/+ZPkg+HhnFsH5rYUnciaO+WZjFqWgbJX7QtR5TmNzw9EmWjVuVBOnruwZJRMgrAS/hNqyQulEPdXpoDZgyjw==",
+        "requested": "[0.0.1-beta.2, )",
+        "resolved": "0.0.1-beta.2",
+        "contentHash": "Q1Yu/PGfDa/MUfgSq2Tb8zrWK8mraF49sOg+fDkNg8+bCFho98+l64u7n973Gei+1bIcfmXP/OA9cn5Yv378TA==",
         "dependencies": {
-          "Unfucked": "0.0.1-beta.1",
+          "ThrottleDebounce": "3.0.0-beta3",
+          "Unfucked": "0.0.1-beta.5",
           "mwinapi": "0.3.0.5"
         }
       },
@@ -86,8 +87,8 @@
       },
       "Unfucked": {
         "type": "Transitive",
-        "resolved": "0.0.1-beta.1",
-        "contentHash": "K20GUaGtfJ0uPLaWzQSFkM8zjWdNl6jTWicSwxb0EV7w0vJ433TUVgWB6zO9gYXwNLrlbWK4GJHZMo+NLA4nOw=="
+        "resolved": "0.0.1-beta.5",
+        "contentHash": "2vpz1u3knWf7F7QCbns1lbEps0wWWeJa1d5lGHiSQ9JTK3YBvd6Nn1jh3AzNTxSLppb9SAPUijLKP63kI3DdvA=="
       },
       "Workshell.PE": {
         "type": "Transitive",
