@@ -60,7 +60,7 @@ public class Startup {
 
             using Mutex singleInstanceLock = new(true, $@"Local\{PROGRAM_NAME}_{WindowsIdentity.GetCurrent().User?.Value}", out bool isOnlyInstance);
             if (!isOnlyInstance) {
-                logger.Warn("Another older instance of {program} is already running for this user, this new instance is exiting now.", PROGRAM_NAME);
+                logger.Warn("Another instance of {program} is already running for this user, this instance is exiting now.", PROGRAM_NAME);
                 return 2;
             }
 
@@ -87,6 +87,8 @@ public class Startup {
                     args.Cancel = true;
                     Application.Exit();
                 };
+
+                SystemEvents.SessionEnding += onWindowsLogoff;
 
                 Application.Run();
             } finally {
@@ -137,6 +139,12 @@ public class Startup {
              For more information, see https://github.com/Aldaviva/{PROGRAM_NAME}.
              Press Ctrl+C to copy this message.
              """, $"{PROGRAM_NAME} {PROGRAM_VERSION} usage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private static void onWindowsLogoff(object sender, SessionEndingEventArgs args) {
+        logger?.Info("Exiting due to Windows session ending for {0}", args.Reason);
+        SystemEvents.SessionEnding -= onWindowsLogoff;
+        Application.Exit();
     }
 
 }

@@ -12,10 +12,10 @@ internal static class Logging {
     private static readonly SimpleLayout MESSAGE_FORMAT = new(
         " ${level:format=FirstCharacter:lowercase=true} | ${date:format=yyyy-MM-dd HH\\:mm\\:ss.fff} | ${logger:shortName=true:padding=-26} | ${message:withException=true:exceptionSeparator=\n}");
 
-    private static readonly LogLevel LOG_LEVEL = LogLevel.Trace;
+    private static readonly LogLevel LOG_LEVEL = LogLevel.Debug;
 
     public static void initialize(bool enableFileAppender, string? logFilename) {
-        logFilename ??= Path.Combine(Path.GetTempPath(), Path.ChangeExtension(nameof(AuthenticatorChooser), ".log"));
+        logFilename = logFilename != null ? Environment.ExpandEnvironmentVariables(logFilename) : Path.Combine(Path.GetTempPath(), Path.ChangeExtension(nameof(AuthenticatorChooser), ".log"));
 
         LoggingConfiguration logConfig = new();
         ServiceRepository    services  = logConfig.LogFactory.ServiceRepository;

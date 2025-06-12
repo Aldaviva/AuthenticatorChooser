@@ -51,8 +51,7 @@ Even if this program doesn't click the Next button (because an extra choice was 
 ## Requirements
 
 - Windows 11 [23H2](https://support.microsoft.com/en-us/topic/october-31-2023-kb5031455-os-builds-22621-2506-and-22631-2506-preview-6513c5ec-c5a2-4aaf-97f5-44c13d29e0d4) or later, or [22H2 Moment 4](https://support.microsoft.com/en-us/topic/september-26-2023-kb5030310-os-build-22621-2361-preview-363ac1ae-6ea8-41b3-b3cc-22a2a5682faf)
-- [.NET Desktop Runtime 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime) or later
-    - This program is compatible with **x64** and **ARM64** CPU architectures and .NET runtimes.
+- [.NET Desktop Runtime 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0/runtime) or later, either x64 or arm64
 
 ## Installation
 
@@ -60,7 +59,7 @@ Even if this program doesn't click the Next button (because an extra choice was 
 1. Extract the `AuthenticatorChooser.exe` file from the ZIP archive to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
-1. Register the program to run automatically on user logon with **any one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2. If you'd like to specify additional command-line arguments like `--skip-all-non-security-key-options`, you can do that here too.
+1. Register the program to run automatically on user logon with **any one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2. If you'd like to specify additional [command-line arguments](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Command%E2%80%90line-arguments) like `--skip-all-non-security-key-options`, you can do that here too.
     - Run this program once with the `--autostart-on-logon` argument
         ```ps1
         .\AuthenticatorChooser --autostart-on-logon
@@ -100,9 +99,9 @@ If you want to build this application yourself instead of downloading precompile
     ```ps1
     cd .\AuthenticatorChooser\AuthenticatorChooser\
     ```
-1. Choose one of the [version tags](https://github.com/Aldaviva/AuthenticatorChooser/tags) to build, or skip this step to use the latest commit.
+1. Choose one of the [version tags](https://github.com/Aldaviva/AuthenticatorChooser/tags) to build, or skip this step to use the head commit on the master branch.
     ```ps1
-    git checkout 0.3.0
+    git checkout 0.3.1
     ```
 1. Build the program.
     ```ps1
