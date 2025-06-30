@@ -22,9 +22,9 @@
       },
       "NLog": {
         "type": "Direct",
-        "requested": "[5.5.0, )",
-        "resolved": "5.5.0",
-        "contentHash": "FCH8s7GWlonH5JXV9/EpeNJ8pRZQMVZOSWX3JrHPU8rzdHJhS5+lUGGvJIUOtzkGV1clYBFR0WXOI5FnUwVCMA=="
+        "requested": "[6.0.1, )",
+        "resolved": "6.0.1",
+        "contentHash": "qDWiqy8/xdpZKtHna/645KbalwP86N2NFJEzfqhcv+Si4V2iNaEfR/dCneuF/4+Dcwl3f7jHMXj3ndWYftV3Ug=="
       },
       "System.Management": {
         "type": "Direct",
@@ -37,15 +37,15 @@
       },
       "ThrottleDebounce": {
         "type": "Direct",
-        "requested": "[3.0.0-beta3, )",
-        "resolved": "3.0.0-beta3",
-        "contentHash": "pZTefK4xZEvc5Q+M63lIAKVl8ZDsPWiUvuFk1+d9q3Hmgme76P3qC07Ho40ccaUiUKQYnO3a/dnu/SD8CsPZqQ=="
+        "requested": "[3.0.0-beta4, )",
+        "resolved": "3.0.0-beta4",
+        "contentHash": "COoRYQqWRZmENa7YQk7UrFISMBkdhECX1wasSFMy5am34ok5s1JYDgS8Ea5WLk0L/iau1jM904bldCZZF56xAQ=="
       },
       "Unfucked.Windows": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.2, )",
-        "resolved": "0.0.1-beta.2",
-        "contentHash": "Q1Yu/PGfDa/MUfgSq2Tb8zrWK8mraF49sOg+fDkNg8+bCFho98+l64u7n973Gei+1bIcfmXP/OA9cn5Yv378TA==",
+        "requested": "[0.0.1-beta.3, )",
+        "resolved": "0.0.1-beta.3",
+        "contentHash": "e5eFD+oenuZCYFh5NXS/zn40QsALR2roLx2IeozSShlQmftDZkjBPt6pvzJkxb6y5IL2NhOZBoM0pMn5woQOmw==",
         "dependencies": {
           "ThrottleDebounce": "3.0.0-beta3",
           "Unfucked": "0.0.1-beta.5",
