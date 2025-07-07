@@ -30,10 +30,10 @@
     <ItemGroup>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
-        <PackageReference Include="NLog" Version="5.5.0" />
+        <PackageReference Include="NLog" Version="6.0.1" />
         <PackageReference Include="System.Management" Version="9.0.6" />
-        <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta3" />
-        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.2" />
+        <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta5" />
+        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.4" />
         <PackageReference Include="Workshell.PE.Resources" Version="4.0.0.147" />
     </ItemGroup>
 
