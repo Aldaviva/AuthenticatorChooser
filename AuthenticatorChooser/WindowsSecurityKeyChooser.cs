@@ -14,7 +14,7 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
     private const string WINDOW_CLASS_NAME  = "Credential Dialog Xaml Host";
     private const string ALT_TAB_CLASS_NAME = "XamlExplorerHostIslandWindow";
 
-    private static readonly Logger LOGGER = LogManager.GetLogger(typeof(WindowsSecurityKeyChooser).FullName);
+    private static readonly Logger LOGGER = LogManager.GetLogger(typeof(WindowsSecurityKeyChooser).FullName!);
 
     private static readonly Condition TITLE_CONDITION               = new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock");
     private static readonly Condition CREDENTIALS_LIST_ID_CONDITION = new PropertyCondition(AutomationElement.AutomationIdProperty, "CredentialsList");

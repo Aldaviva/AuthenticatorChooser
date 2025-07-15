@@ -1,9 +1,7 @@
 using NLog;
 using NLog.Config;
 using NLog.Layouts;
-using NLog.MessageTemplates;
 using NLog.Targets;
-using System.Text;
 
 namespace AuthenticatorChooser;
 
@@ -18,14 +16,11 @@ internal static class Logging {
         logFilename = logFilename != null ? Environment.ExpandEnvironmentVariables(logFilename) : Path.Combine(Path.GetTempPath(), Path.ChangeExtension(nameof(AuthenticatorChooser), ".log"));
 
         LoggingConfiguration logConfig = new();
-        ServiceRepository    services  = logConfig.LogFactory.ServiceRepository;
-        services.RegisterService(typeof(IValueFormatter), new UnfuckedValueFormatter((IValueFormatter) services.GetService(typeof(IValueFormatter))!));
 
         if (enableFileAppender) {
             logConfig.AddRule(LOG_LEVEL, LogLevel.Fatal, new FileTarget("fileAppender") {
-                Layout          = MESSAGE_FORMAT,
-                FileName        = logFilename,
-                CleanupFileName = true
+                Layout   = MESSAGE_FORMAT,
+                FileName = logFilename
             });
         }
 
@@ -35,30 +30,6 @@ internal static class Logging {
         });
 
         LogManager.Configuration = logConfig;
-    }
-
-    /// <summary>
-    /// When logging strings to NLog using structured logging, don't surround them with quotation marks, because it looks stupid
-    /// </summary>
-    /// <param name="parent">Built-in <see cref="ValueFormatter"/></param>
-    private class UnfuckedValueFormatter(IValueFormatter parent): IValueFormatter {
-
-        public bool FormatValue(object value, string format, CaptureType captureType, IFormatProvider formatProvider, StringBuilder builder) {
-            switch (value) {
-                case string s:
-                    builder.Append(s);
-                    return true;
-                case StringBuilder s:
-                    builder.Append(s);
-                    return true;
-                case ReadOnlyMemory<char> s:
-                    builder.Append(s);
-                    return true;
-                default:
-                    return parent.FormatValue(value, format, captureType, formatProvider, builder);
-            }
-        }
-
     }
 
 }
