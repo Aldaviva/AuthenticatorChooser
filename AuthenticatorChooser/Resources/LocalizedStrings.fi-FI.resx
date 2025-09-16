@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Varmistetaan, että kyseessä olet sinä</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Valitse tunnuskoodi</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Kirjaudu sisään todentamisavaimella</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Käytä toista todentamisavainta</value>
+  </data>
 </root>

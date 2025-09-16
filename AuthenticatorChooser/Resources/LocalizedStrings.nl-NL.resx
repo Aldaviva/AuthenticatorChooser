@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Uw identiteit controleren</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Wachtwoordcode kiezen</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Aanmelden met een wachtwoordsleutel</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Een andere wachtwoordsleutel kiezen</value>
+  </data>
 </root>

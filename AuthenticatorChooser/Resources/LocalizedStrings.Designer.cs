@@ -61,6 +61,24 @@ namespace AuthenticatorChooser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose a different passkey.
+        /// </summary>
+        internal static string chooseADifferentPasskey {
+            get {
+                return ResourceManager.GetString("chooseADifferentPasskey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose a passkey.
+        /// </summary>
+        internal static string chooseAPasskey {
+            get {
+                return ResourceManager.GetString("chooseAPasskey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Making sure it’s you.
         /// </summary>
         internal static string makingSureItsYou {
@@ -75,6 +93,15 @@ namespace AuthenticatorChooser.Resources {
         internal static string securityKey {
             get {
                 return ResourceManager.GetString("securityKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign in with a passkey.
+        /// </summary>
+        internal static string signInWithAPasskey {
+            get {
+                return ResourceManager.GetString("signInWithAPasskey", resourceCulture);
             }
         }
         

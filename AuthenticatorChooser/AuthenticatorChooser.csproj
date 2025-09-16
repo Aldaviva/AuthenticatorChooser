@@ -7,7 +7,7 @@
         <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.3.2</Version>
+        <Version>0.4.0</Version>
         <Authors>Ben Hutchison</Authors>
         <Copyright>© 2025 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
@@ -30,8 +30,8 @@
     <ItemGroup>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
-        <PackageReference Include="NLog" Version="6.0.3" />
-        <PackageReference Include="System.Management" Version="9.0.8" />
+        <PackageReference Include="NLog" Version="6.0.4" />
+        <PackageReference Include="System.Management" Version="9.0.9" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta5" />
         <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.5" />
         <PackageReference Include="Workshell.PE.Resources" Version="4.0.0.147" />

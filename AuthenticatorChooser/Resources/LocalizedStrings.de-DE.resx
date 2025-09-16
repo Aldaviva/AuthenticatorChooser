@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Sicherstellen, dass Sie es sind</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Wählen Sie einen Hauptschlüssel aus</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Anmelden mit einem Hauptschlüssel</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Wählen Sie einen anderen Hauptschlüssel aus.</value>
+  </data>
 </root>

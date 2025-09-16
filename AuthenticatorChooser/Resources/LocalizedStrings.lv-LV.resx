@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Pārliecināmies, vai tas esat jūs</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Izvēlieties ieejas atslēgu</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Pierakstieties, izmantojot ieejas atslēgu</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Izvēlieties citu ieejas atslēgu</value>
+  </data>
 </root>

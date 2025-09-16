@@ -44,7 +44,9 @@ public class WindowsSecurityKeyChooser: AbstractSecurityKeyChooser<SystemWindow>
                 LOGGER.Trace("Found outerScrollViewer, looking for dialog title");
             }
 
-            IEnumerable<string> expectedTitles = I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Concat(skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : []).ToList();
+            IEnumerable<string> expectedTitles = I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY) // 23H2
+                .Concat(I18N.getStrings(I18N.Key.CHOOSE_A_PASSKEY))                                  // 25H2
+                .Concat(skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : []).ToList();
             // #21: title not rendered immediately
             if (outerScrollViewer.WaitForFirst(TreeScope.Children, TITLE_CONDITION, TimeSpan.FromSeconds(5)) is { } titleLabel) {
                 string? actualTitle = titleLabel.GetCurrentPropertyValue(AutomationElement.NameProperty) as string;

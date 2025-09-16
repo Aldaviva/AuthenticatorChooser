@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Проверка на самоличността ви</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Избор на ключ за достъп</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Влезте с ключа за достъп</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Изберете друг ключ за достъп</value>
+  </data>
 </root>

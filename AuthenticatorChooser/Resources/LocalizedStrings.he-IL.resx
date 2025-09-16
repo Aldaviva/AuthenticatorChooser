@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>‏‏מוודא שזה אתה</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>בחר מפתח</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>כניסה באמצעות מפתח</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>בחר מפתח אחר</value>
+  </data>
 </root>

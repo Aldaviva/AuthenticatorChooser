@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Személyazonosság ellenőrzése</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Hozzáférési kulcs kiválasztása</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Jelentkezzen be egy hozzáférési kulccsal</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Másik hozzáférési kulcs kiválasztása</value>
+  </data>
 </root>

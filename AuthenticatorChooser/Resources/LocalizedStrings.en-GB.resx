@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Making sure it’s you</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Choose a passkey</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Sign in with a passkey</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Choose a different passkey</value>
+  </data>
 </root>

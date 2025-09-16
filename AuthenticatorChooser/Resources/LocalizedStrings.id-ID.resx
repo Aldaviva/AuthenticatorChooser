@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Memastikan bahwa ini Anda</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Pilih kunci sandi</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Masuk dengan kunci sandi</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Pilih kunci sandi lain</value>
+  </data>
 </root>

@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Estem confirmant que ets tu</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Trieu una clau de pas</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Inicia la sessió amb una clau de pas</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Trieu una altra clau de pas</value>
+  </data>
 </root>
