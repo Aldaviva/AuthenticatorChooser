@@ -1,4 +1,5 @@
 using AuthenticatorChooser.WindowOpening;
+using AuthenticatorChooser.Windows11;
 using ManagedWinapi.Windows;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Conventions;
@@ -71,7 +72,7 @@ public class Startup {
                 logger.Info("{Locales are} {locales}", I18N.LOCALE_NAMES.Count == 1 ? "Locale is" : "Locales are", string.Join(", ", I18N.LOCALE_NAMES));
 
                 using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
-                WindowsSecurityKeyChooser   securityKeyChooser    = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
+                WindowsSecurityKeyChooser   securityKeyChooser    = new(new ChooserOptions(skipAllNonSecurityKeyOptions));
 
                 windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
 

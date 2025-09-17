@@ -70,7 +70,7 @@ public static partial class I18N {
 
     static I18N() {
         StringTableResource.Register();
-        string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows";
+        string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? @"C:\Windows";
 
         STRINGS = new Dictionary<Key, IList<string>> {
             [Key.SECURITY_KEY] = getStrings(nameof(LocalizedStrings.securityKey), fidoCredProvMuiPath, 15, 230), // Security key

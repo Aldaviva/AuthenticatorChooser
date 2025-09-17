@@ -1,7 +1,7 @@
 using Microsoft.Win32;
 using System.Management;
 
-namespace AuthenticatorChooser;
+namespace AuthenticatorChooser.Windows11;
 
 /// <param name="name">Microsoft Windows 11 Pro</param>
 /// <param name="marketingVersion">24H2</param>

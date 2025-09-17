@@ -9,12 +9,6 @@ public abstract class AbstractSecurityKeyChooser<T>: SecurityKeyChooser<T> {
 
     public abstract bool isFidoPromptWindow(SystemWindow window);
 
-    protected static bool nameContainsAny(AutomationElement element, IEnumerable<string> possibleSubstrings) {
-        string name = element.Current.Name;
-        // #2: in addition to a prefix, there is sometimes also a suffix after the substring
-        return possibleSubstrings.Any(possibleSubstring => name.Contains(possibleSubstring, StringComparison.CurrentCulture));
-    }
-
     /// <summary>
     /// <para>Create an <see cref="AndCondition"/> or <see cref="OrCondition"/> for a <paramref name="property"/> from a series of <paramref name="values"/>, which have fewer than 2 items in it.</para>
     /// <para>This avoids a crash in the <see cref="AndCondition"/> and <see cref="OrCondition"/> constructors if the array has size 1.</para>
