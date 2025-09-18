@@ -19,7 +19,9 @@ public class Startup {
 
     private const string PROGRAM_NAME = nameof(AuthenticatorChooser);
 
-    private static readonly string PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
+    private static readonly string                  PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
+    private static readonly CancellationTokenSource EXITING_TRIGGER = new();
+    public static readonly  CancellationToken       EXITING         = EXITING_TRIGGER.Token;
 
     private static Logger? logger;
 
@@ -86,6 +88,7 @@ public class Startup {
 
                 Console.CancelKeyPress += (_, args) => {
                     args.Cancel = true;
+                    EXITING_TRIGGER.Cancel();
                     Application.Exit();
                 };
 

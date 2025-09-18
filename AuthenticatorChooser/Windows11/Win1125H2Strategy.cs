@@ -1,5 +1,6 @@
 using NLog;
 using System.Windows.Automation;
+using Unfucked;
 
 namespace AuthenticatorChooser.Windows11;
 
@@ -7,39 +8,50 @@ public class Win1125H2Strategy(ChooserOptions options): Win11Strategy(options) {
 
     private static readonly Logger LOGGER = LogManager.GetLogger(typeof(Win1125H2Strategy).FullName!);
 
-    private static readonly PropertyCondition LINK_CONDITION = new(AutomationElement.ClassNameProperty, "Hyperlink");
+    private static readonly Condition LINK_CONDITION = new AndCondition(
+        new PropertyCondition(AutomationElement.ClassNameProperty, "Hyperlink"),
+        AutomationElement.NameProperty.singletonSafeCondition(false, I18N.getStrings(I18N.Key.CHOOSE_A_DIFFERENT_PASSKEY)));
 
-    /*
-     * The choice to use a non-TPM passkey was moved from the list to a separate link in 25H2
-     */
-    public override AutomationElement? findDesiredChoice(AutomationElement outerScrollViewer, IReadOnlyCollection<AutomationElement> authenticatorChoices) {
-        AutomationElement? desiredChoice = base.findDesiredChoice(outerScrollViewer, authenticatorChoices);
-        if (desiredChoice == null && options.skipAllNonSecurityKeyOptions &&
-            outerScrollViewer.FindFirst(TreeScope.Children, LINK_CONDITION) is { } chooseADifferentPasskeyLink &&
-            chooseADifferentPasskeyLink.nameContainsAny(I18N.getStrings(I18N.Key.CHOOSE_A_DIFFERENT_PASSKEY))) {
-            desiredChoice = chooseADifferentPasskeyLink;
-        }
-        return desiredChoice;
-    }
+    private static readonly Condition AUTHENTICATOR_NAME_CONDITION = new AndCondition(
+        new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock"),
+        new PropertyCondition(AutomationElement.HeadingLevelProperty, AutomationHeadingLevel.None));
 
-    /*
-     * Selecting choices in 25H2 automatically submits them, so don't select anything in case Shift is held down or more choices are present, in case the user doesn't want the dialog to be submitted automatically.
-     */
-    public override void preselectChoice(AutomationElement desiredChoice, bool isShiftDown) { }
+    public override void submitChoice(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown) {
+        if (I18N.getStrings(I18N.Key.CHOOSE_A_PASSKEY).Contains(actualTitle, StringComparer.CurrentCulture)) {
+            if (findAuthenticatorChoices(outerScrollViewer) is not { } authenticatorChoices) return;
 
-    /*
-     * Security key choice is selectable, but the "Choose a different passkey" link is invokable
-     */
-    public override bool submitChoice(AutomationElement desiredChoice, IReadOnlyList<AutomationElement> authenticatorChoices, bool isShiftDown) {
-        if (!base.submitChoice(desiredChoice, authenticatorChoices, isShiftDown)) {
-            return false;
-        } else if (desiredChoice.TryGetCurrentPattern(SelectionItemPattern.Pattern, out object selectable)) {
-            ((SelectionItemPattern) selectable).Select();
+            if (getSecurityKeyChoice(authenticatorChoices) is not { } desiredChoice) {
+                LOGGER.Debug("Desired choice not found, skipping");
+                return;
+            }
+
+            if (shouldSkipSubmission(desiredChoice, authenticatorChoices, isShiftDown)) return;
+
+            ((SelectionItemPattern) desiredChoice.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
+            LOGGER.Info("Choice selected {0:N3} sec after dialog appeared", options.overallStopwatch.Elapsed.TotalSeconds);
         } else {
-            ((InvokePattern) desiredChoice.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+            /*
+             * The choice to use a non-TPM passkey was moved from the list to a separate link in 25H2.
+             * Here, the user wants to skip all non-security-key options, and this prompt is one of the authenticator challenges like entering a TPM PIN or plugging in a security key
+             */
+            if (outerScrollViewer.WaitForFirst(TreeScope.Children, AUTHENTICATOR_NAME_CONDITION) is not { } authenticatorNameEl) {
+                LOGGER.Debug("Could not find name of the current authenticator while trying to skip a non-security-key option, ignoring dialog");
+                return;
+            }
+
+            if (I18N.getStrings(I18N.Key.SECURITY_KEY).Contains(authenticatorNameEl.Current.Name, StringComparer.CurrentCulture)) {
+                LOGGER.Debug("The current authenticator is already a security key, so there is nothing to do on this dialog");
+                return;
+            }
+
+            if (outerScrollViewer.FindFirst(TreeScope.Children, LINK_CONDITION) is not { } chooseADifferentPasskeyLink) {
+                LOGGER.Warn("Could not find 'Choose a different passkey' link in dialog");
+                return;
+            }
+
+            ((InvokePattern) chooseADifferentPasskeyLink.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
+            LOGGER.Info("Requested list of all authenticators {0:N3} sec after dialog appeared", options.overallStopwatch.Elapsed.TotalSeconds);
         }
-        LOGGER.Info("Choice selected {0:N3} sec after dialog appeared", options.overallStopwatch.Elapsed.TotalSeconds);
-        return true;
     }
 
 }
