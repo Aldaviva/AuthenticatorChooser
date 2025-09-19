@@ -25,10 +25,10 @@ public class Win1125H2Strategy(ChooserOptions options): Win11Strategy(options) {
                 return;
             }
 
-            if (shouldSkipSubmission(desiredChoice, authenticatorChoices, isShiftDown)) return;
-
-            ((SelectionItemPattern) desiredChoice.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
-            LOGGER.Info("Choice selected {0:N3} sec after dialog appeared", options.overallStopwatch.Elapsed.TotalSeconds);
+            if (!shouldSkipSubmission(desiredChoice, authenticatorChoices, isShiftDown)) {
+                ((SelectionItemPattern) desiredChoice.GetCurrentPattern(SelectionItemPattern.Pattern)).Select();
+                LOGGER.Info("Choice selected {0:N3} sec after dialog appeared", options.overallStopwatch.Elapsed.TotalSeconds);
+            }
         } else {
             /*
              * The choice to use a non-TPM passkey was moved from the list to a separate link in 25H2.

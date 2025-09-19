@@ -9,8 +9,6 @@ public class Win1123H2Strategy(ChooserOptions options): Win11Strategy(options) {
 
     private static readonly Condition NEXT_BUTTON_CONDITION = new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton");
 
-    private bool isLocalWindowsHelloTpmPrompt;
-
     /**
      * If we're on the TPM dialog, and the user wants to absolutely always use security keys, then we just selected "Use another device" to see the list of all authenticator choices, so the dialog is closing because we selected something, so don't do anything else with the soon to be nonexistant dialog.
      * Otherwise, perform common checks like holding Shift and stopping if there are other options.
@@ -26,7 +24,8 @@ public class Win1123H2Strategy(ChooserOptions options): Win11Strategy(options) {
             return;
         }
 
-        AutomationElement? desiredChoice = getSecurityKeyChoice(authenticatorChoices);
+        bool               isLocalWindowsHelloTpmPrompt = false;
+        AutomationElement? desiredChoice                = getSecurityKeyChoice(authenticatorChoices);
         if (desiredChoice == null && options.skipAllNonSecurityKeyOptions) {
             desiredChoice                = authenticatorChoices.FirstOrDefault(choice => choice.nameContainsAny(I18N.getStrings(I18N.Key.USE_ANOTHER_DEVICE))); // #15
             isLocalWindowsHelloTpmPrompt = desiredChoice != null;
@@ -49,9 +48,7 @@ public class Win1123H2Strategy(ChooserOptions options): Win11Strategy(options) {
             // do nothing because the prompt either has already closed or will remain open due to Shift being held down
         } else if (fidoEl.FindFirst(TreeScope.Children, NEXT_BUTTON_CONDITION) is not { } nextButton) {
             LOGGER.Error("Could not find Next button in Windows Security dialog box, skipping this dialog box instance");
-        } else if (shouldSkipSubmission(desiredChoice, authenticatorChoices, isShiftDown)) {
-            // do nothing
-        } else {
+        } else if (!shouldSkipSubmission(desiredChoice, authenticatorChoices, isShiftDown)) {
             ((InvokePattern) nextButton.GetCurrentPattern(InvokePattern.Pattern)).Invoke();
             LOGGER.Info("Next button pressed {0:N3} sec after dialog appeared", options.overallStopwatch.Elapsed.TotalSeconds);
         }

@@ -3,7 +3,7 @@
 
 [![Build status](https://img.shields.io/github/actions/workflow/status/Aldaviva/AuthenticatorChooser/dotnet.yml?branch=master&logo=github)](https://github.com/Aldaviva/AuthenticatorChooser/actions/workflows/dotnet.yml)
 
-*Program that runs in the background to automatically skip the Windows "Sign in with your passkey" phone prompt and go straight to the USB security key option.*
+*Program that runs in the background to automatically skip the Windows passkey phone pairing option and go straight to the USB security key.*
 
 <!-- MarkdownTOC autolink="true" bracket="round" autoanchor="false" levels="1,2" -->
 
@@ -12,8 +12,8 @@
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Demo](#demo)
-- [Related](#related)
 - [Building](#building)
+- [Related](#related)
 
 <!-- /MarkdownTOC -->
 
@@ -88,13 +88,6 @@ Even if this program doesn't click the Next button (because an extra choice was 
 
 To test with a sample FIDO authentication prompt, visit [WebAuthn.io](https://webauthn.io) and click the **Authenticate** button.
 
-## Related
-
-### Creating new passkeys
-When you try to create a passkey in your browser, the website may force it to be stored only in the TPM or only on a security key, rather than letting you freely choose between the two destinations. To override the site's mandate and put yourself back in control of where your new passkey will be saved, you can install my [**Create Passkeys Anywhere** user script](https://github.com/Aldaviva/userscripts/raw/master/create-passkeys-anywhere.user.js) (requires [Tampermonkey](https://tampermonkey.net/) or a similar browser extension). It doesn't only run on Windows, for example it also works on Firefox for Android.
-
-With this script installed, you will by default always be asked whether to save each new passkey on a security key or in the TPM. If you want to override this behavior, you can also configure the user script by editing the `options.allowedPasskeyCreationStorage` value in the script source. If you change it from `anywhere` to `securityKey`, it will only allow you to save new passkeys on security keys, and if you change it to `tpm`, it will only allow them to be saved in the TPM.
-
 ## Building
 
 If you want to build this application yourself instead of downloading precompiled binaries from the [releases](https://github.com/Aldaviva/AuthenticatorChooser/releases) page, you can follow these steps.
@@ -122,5 +115,13 @@ The program will be compiled to the following path, assuming your CPU architectu
 .\bin\Release\net8.0-windows\win-x64\publish\AuthenticatorChooser.exe
 ```
 
-You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 instead of the command line if you prefer. 
+You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 instead of the command line if you prefer.
+
 - Visual Studio Publishing Profiles have been broken for years unless certain other workloads (like ASP.NET Web Development) are installed, so if you can't publish from VS you'll have to use the `dotnet publish` command above.
+
+## Related
+
+### Creating new passkeys
+When you try to create a passkey in your browser, the website may force it to be stored only in the TPM or only on a security key, rather than letting you freely choose between the two destinations. To override the site's mandate and put yourself back in control of where your new passkey will be saved, you can install my [**Create Passkeys Anywhere** user script](https://github.com/Aldaviva/userscripts/raw/master/create-passkeys-anywhere.user.js) (requires [Tampermonkey](https://tampermonkey.net/) or a similar browser extension). It doesn't only run on Windows, for example it also works on Firefox for Android.
+
+With this script installed, you will by default always be asked whether to save each new passkey on a security key or in the TPM. If you want to override this behavior, you can also configure the user script by editing the `options.allowedPasskeyCreationStorage` value in the script source. If you change it from `anywhere` to `securityKey`, it will only allow you to save new passkeys on security keys, and if you change it to `tpm`, it will only allow them to be saved in the TPM.
