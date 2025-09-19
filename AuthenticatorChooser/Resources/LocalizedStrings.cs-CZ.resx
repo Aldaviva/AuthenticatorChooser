@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Ověřujeme, jestli jste to vy.</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Volba klíče</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Přihlášení pomocí klíče</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Vybrat jiný klíč</value>
+  </data>
 </root>

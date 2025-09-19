@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>ご本人確認をします</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>パスキーの選択</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>パスキーを使用してサインインします</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>別のパスキーを選択する</value>
+  </data>
 </root>

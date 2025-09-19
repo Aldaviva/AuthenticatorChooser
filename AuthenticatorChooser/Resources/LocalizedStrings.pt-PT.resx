@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>A verificar se é mesmo o utilizador</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Escolher uma senha de acesso</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Iniciar sessão com uma chave de acesso</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Selecione uma chave de acesso diferente</value>
+  </data>
 </root>

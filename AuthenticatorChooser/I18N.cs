@@ -41,7 +41,22 @@ public static partial class I18N {
         /// <summary>
         /// Making sure it’s you
         /// </summary>
-        MAKING_SURE_ITS_YOU
+        MAKING_SURE_ITS_YOU,
+
+        /// <summary>
+        /// Choose a passkey
+        /// </summary>
+        CHOOSE_A_PASSKEY,
+
+        /// <summary>
+        /// Sign in with a passkey
+        /// </summary>
+        SIGN_IN_WITH_A_PASSKEY,
+
+        /// <summary>
+        /// Choose a different passkey
+        /// </summary>
+        CHOOSE_A_DIFFERENT_PASSKEY
 
     }
 
@@ -55,7 +70,7 @@ public static partial class I18N {
 
     static I18N() {
         StringTableResource.Register();
-        string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? "C:\\Windows";
+        string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") ?? @"C:\Windows";
 
         STRINGS = new Dictionary<Key, IList<string>> {
             [Key.SECURITY_KEY] = getStrings(nameof(LocalizedStrings.securityKey), fidoCredProvMuiPath, 15, 230), // Security key
@@ -64,6 +79,9 @@ public static partial class I18N {
             [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithYourPasskey), webAuthnMuiPath, 4, 53), // Sign In With Your Passkey title; entry 63 has the same value
             [Key.USE_ANOTHER_DEVICE] = getStrings(nameof(LocalizedStrings.useAnotherDevice), fidoCredProvMuiPath, 15, 234), // Use another device
             [Key.MAKING_SURE_ITS_YOU] = getStrings(nameof(LocalizedStrings.makingSureItsYou), ngcCredProvMuiPath, 35, 554), // Making sure it’s you
+            [Key.CHOOSE_A_PASSKEY] = getStrings(nameof(LocalizedStrings.chooseAPasskey), webAuthnMuiPath, 67, 1057), // Choose a passkey
+            [Key.SIGN_IN_WITH_A_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithAPasskey), webAuthnMuiPath, 65, 1037), // Sign in with a passkey
+            [Key.CHOOSE_A_DIFFERENT_PASSKEY] = getStrings(nameof(LocalizedStrings.chooseADifferentPasskey), webAuthnMuiPath, 65, 1029), // Sign in with a passkey
         }.ToFrozenDictionary();
 
         foreach (PortableExecutableImage? dllFile in DLL_CACHE.Values) {

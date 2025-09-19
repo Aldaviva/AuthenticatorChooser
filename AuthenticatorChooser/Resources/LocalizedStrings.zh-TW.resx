@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>請確認是您</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>選擇金鑰</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>使用密鑰登入</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>選擇其他金鑰</value>
+  </data>
 </root>

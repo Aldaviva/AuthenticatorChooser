@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Įsitikina, kad tai tikrai jūs</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Pasirinkite prieigos raktą</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Prisijunkite naudodami prieigos raktą</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Pasirinkite kitą prieigos raktą</value>
+  </data>
 </root>

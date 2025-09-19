@@ -1,4 +1,5 @@
 using AuthenticatorChooser.WindowOpening;
+using AuthenticatorChooser.Windows11;
 using ManagedWinapi.Windows;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Conventions;
@@ -18,7 +19,9 @@ public class Startup {
 
     private const string PROGRAM_NAME = nameof(AuthenticatorChooser);
 
-    private static readonly string PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
+    private static readonly string                  PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
+    private static readonly CancellationTokenSource EXITING_TRIGGER = new();
+    public static readonly  CancellationToken       EXITING         = EXITING_TRIGGER.Token;
 
     private static Logger? logger;
 
@@ -71,7 +74,7 @@ public class Startup {
                 logger.Info("{Locales are} {locales}", I18N.LOCALE_NAMES.Count == 1 ? "Locale is" : "Locales are", string.Join(", ", I18N.LOCALE_NAMES));
 
                 using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
-                WindowsSecurityKeyChooser   securityKeyChooser    = new() { skipAllNonSecurityKeyOptions = skipAllNonSecurityKeyOptions };
+                WindowsSecurityKeyChooser   securityKeyChooser    = new(new ChooserOptions(skipAllNonSecurityKeyOptions));
 
                 windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
 
@@ -85,6 +88,7 @@ public class Startup {
 
                 Console.CancelKeyPress += (_, args) => {
                     args.Cancel = true;
+                    EXITING_TRIGGER.Cancel();
                     Application.Exit();
                 };
 

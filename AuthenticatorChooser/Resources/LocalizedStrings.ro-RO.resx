@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Ne asigurăm că sunteți dvs.</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Alegeți o cheie de acces</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Conectați-vă cu o cheie de acces</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Alegeți o altă cheie de acces</value>
+  </data>
 </root>

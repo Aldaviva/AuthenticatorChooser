@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Benetan zu zarela egiaztatzen ari gara</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Aukeratu sarbide-giltza bat</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Hasi saioa sarbide-giltza batekin</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Aukeratu beste sarbide-giltza bat</value>
+  </data>
 </root>

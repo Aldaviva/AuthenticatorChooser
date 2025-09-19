@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Teie isiku tuvastamine</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Vali pääsuvõti</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Logige sisse pääsuvõtmega</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Vali muu pääsuvõti</value>
+  </data>
 </root>

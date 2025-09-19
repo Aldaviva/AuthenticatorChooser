@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Kontrollerer at det er deg</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Velg en tilgangsnøkkel</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Logg på med en adgangsnøkkel</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Velg en annen tilgangsnøkkel</value>
+  </data>
 </root>

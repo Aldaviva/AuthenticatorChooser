@@ -135,4 +135,13 @@
   <data name="makingSureItsYou" xml:space="preserve">
     <value>Gerçekten siz olduğunuz doğrulanıyor</value>
   </data>
+  <data name="chooseAPasskey" xml:space="preserve">
+    <value>Geçiş anahtarı seçin</value>
+  </data>
+  <data name="signInWithAPasskey" xml:space="preserve">
+    <value>Geçiş anahtarıyla oturum açın</value>
+  </data>
+  <data name="chooseADifferentPasskey" xml:space="preserve">
+    <value>Farklı bir geçiş anahtarı seçin</value>
+  </data>
 </root>
