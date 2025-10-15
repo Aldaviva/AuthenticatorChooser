@@ -22,17 +22,17 @@
       },
       "NLog": {
         "type": "Direct",
-        "requested": "[6.0.4, )",
-        "resolved": "6.0.4",
-        "contentHash": "Xr+lIk1ZlTTFXEqnxQVLxrDqZlt2tm5X+/AhJbaY2emb/dVtGDiU5QuEtj3gHtwV/SWlP/rJ922I/BPuOJXlRw=="
+        "requested": "[6.0.5, )",
+        "resolved": "6.0.5",
+        "contentHash": "Gq/L18qnZhIfrfqXtUBKdDMtT8cZB+974C99H+w6DxdlIcT4wYCCGjRgnUij3spUH1HWScF6JRaCyv11CHZJ6g=="
       },
       "System.Management": {
         "type": "Direct",
-        "requested": "[9.0.9, )",
-        "resolved": "9.0.9",
-        "contentHash": "U+OnvxuFi/V0++P98Auba1pAyaOXU5EioSz0xczgFsB7l/sPX9Ix4rWwI+lXJG4/icPieeRsfpXPEIcSBTQShw==",
+        "requested": "[9.0.10, )",
+        "resolved": "9.0.10",
+        "contentHash": "kJY2C6MjKSqfRkEnc8gn4Jth81Anrgxxpu0MffjEadfpp0Ll/gdGpYnDhRWZd+iFttkfZC0uCjFmCrZARRqq4w==",
         "dependencies": {
-          "System.CodeDom": "9.0.9"
+          "System.CodeDom": "9.0.10"
         }
       },
       "ThrottleDebounce": {
@@ -69,8 +69,8 @@
       },
       "System.CodeDom": {
         "type": "Transitive",
-        "resolved": "9.0.9",
-        "contentHash": "Az4ngSi0MO3Qwu1+BJRHnc2C8e7+x0oXj+Q++C/wru0vM8J2oL3QlliiZPdwPnR0VbiL0lH7izSIGQssMaRiGQ=="
+        "resolved": "9.0.10",
+        "contentHash": "00dAIR9Zx+F+AaipjaQmudX3VVpzYvT0bKVD3WcJq6om6pKNrldnp5bSR0VV6IlwDBa1HObGD+sTFaT/I9bBng=="
       },
       "System.ComponentModel.Annotations": {
         "type": "Transitive",
@@ -99,11 +99,11 @@
     "net8.0-windows7.0/win-arm64": {
       "System.Management": {
         "type": "Direct",
-        "requested": "[9.0.9, )",
-        "resolved": "9.0.9",
-        "contentHash": "U+OnvxuFi/V0++P98Auba1pAyaOXU5EioSz0xczgFsB7l/sPX9Ix4rWwI+lXJG4/icPieeRsfpXPEIcSBTQShw==",
+        "requested": "[9.0.10, )",
+        "resolved": "9.0.10",
+        "contentHash": "kJY2C6MjKSqfRkEnc8gn4Jth81Anrgxxpu0MffjEadfpp0Ll/gdGpYnDhRWZd+iFttkfZC0uCjFmCrZARRqq4w==",
         "dependencies": {
-          "System.CodeDom": "9.0.9"
+          "System.CodeDom": "9.0.10"
         }
       },
       "Microsoft.Win32.SystemEvents": {
@@ -123,11 +123,11 @@
     "net8.0-windows7.0/win-x64": {
       "System.Management": {
         "type": "Direct",
-        "requested": "[9.0.9, )",
-        "resolved": "9.0.9",
-        "contentHash": "U+OnvxuFi/V0++P98Auba1pAyaOXU5EioSz0xczgFsB7l/sPX9Ix4rWwI+lXJG4/icPieeRsfpXPEIcSBTQShw==",
+        "requested": "[9.0.10, )",
+        "resolved": "9.0.10",
+        "contentHash": "kJY2C6MjKSqfRkEnc8gn4Jth81Anrgxxpu0MffjEadfpp0Ll/gdGpYnDhRWZd+iFttkfZC0uCjFmCrZARRqq4w==",
         "dependencies": {
-          "System.CodeDom": "9.0.9"
+          "System.CodeDom": "9.0.10"
         }
       },
       "Microsoft.Win32.SystemEvents": {
