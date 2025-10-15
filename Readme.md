@@ -25,9 +25,9 @@ In Windows 10 and 11 prior to 22H2 Moment 4 (September 2023), if the TPM contain
 
 <p align="center"><img src=".github/images/usb-prompt.png" alt="usb security key prompt" width="456" /></p> 
 
-In Windows 11 [22H2 Moment 4](https://www.bleepingcomputer.com/news/microsoft/windows-11-moment-4-update-released-here-are-the-many-new-features/) (September 2023) and later (including [23H2](https://www.bleepingcomputer.com/news/microsoft/windows-11-23h2-new-features-in-the-windows-11-2023-update/)), this behavior changed to include the ability to pair with Android and iOS devices over Bluetooth to use their passkeys, which somewhat ameliorates the problem of passkeys not being portable outside their TPM. The behavior is unchanged if the Windows TPM contains the passkey. However, if the local TPM does not contain the passkey, an additional "Sign in with your passkey" step was added before you can use your USB security key.
+In Windows 11 [22H2 Moment 4](https://www.bleepingcomputer.com/news/microsoft/windows-11-moment-4-update-released-here-are-the-many-new-features/) (September 2023) and later (including [23H2](https://www.bleepingcomputer.com/news/microsoft/windows-11-23h2-new-features-in-the-windows-11-2023-update/)), this behavior changed to include the ability to pair with Android and iOS devices over Bluetooth to use their passkeys, which somewhat ameliorates the problem of passkeys not being portable outside their TPM. The behavior is unchanged if the Windows TPM contains the passkey. However, if the local TPM does not contain the passkey, an additional "Sign in with your passkey"/"Choose a passkey" step was added before you can use your USB security key.
 
-Now it says "To sign in to “`domain`”, choose a device with a saved passkey," and you have to choose whether you want to use an "iPhone, iPad, or Android device" or a "Security key," and smartphone is the default choice. Choosing the USB security key requires two additional clicks or four additional keystrokes. It is impossible to opt out of this new prompt, even if you turn off Bluetooth, don't have an Android or iOS device, or never want to use it for FIDO authentication on your Windows computer. Windows does not remember the most recently used choice, either. You could disable your Bluetooth device in Device Manager, but this will also prevent you from using any other Bluetooth peripherals with your computer, such as Bluetooth mice, keyboards, headphones, speakers, and proximity location trackers.
+Now it says "To sign in to “`domain`”, choose a device with a saved passkey," and you have to choose whether you want to use an "iPhone, iPad, or Android device" or a "Security key," and phone is the default choice. Choosing the USB security key requires two additional clicks or four additional keystrokes. It is impossible to opt out of this new prompt, even if you turn off Bluetooth, don't have an Android or iOS device, or never want to use it for FIDO authentication on your Windows computer. Windows does not remember the most recently used choice, either. You could disable your Bluetooth device in Device Manager, but this will also prevent you from using any other Bluetooth peripherals with your computer, such as Bluetooth mice, keyboards, headphones, speakers, and proximity location trackers.
 
 <p align="center"><img src=".github/images/authenticator-prompt.png" alt="authenticator prompt" width="456" /></p>
 
@@ -103,7 +103,7 @@ If you want to build this application yourself instead of downloading precompile
     ```
 1. Choose one of the [version tags](https://github.com/Aldaviva/AuthenticatorChooser/tags) to build, or skip this step to use the head commit on the `master` branch.
     ```ps1
-    git checkout 0.3.1
+    git checkout 0.4.0
     ```
 1. Build the program.
     ```ps1
