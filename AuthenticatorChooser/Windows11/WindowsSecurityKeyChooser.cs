@@ -1,6 +1,5 @@
 using ManagedWinapi.Windows;
 using NLog;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Automation;
 using System.Windows.Input;
@@ -18,11 +17,10 @@ public class WindowsSecurityKeyChooser(ChooserOptions options): AbstractSecurity
 
     private static readonly Condition TITLE_CONDITION = new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock");
 
-    private ChooserOptions options = options;
+    private PromptStrategy? strategy;
 
     public override void chooseUsbSecurityKey(SystemWindow fidoPrompt) {
-        Stopwatch overallStopwatch = Stopwatch.StartNew();
-        options = options with { overallStopwatch = overallStopwatch };
+        options.overallStopwatch.Restart();
         try {
             if (!isFidoPromptWindow(fidoPrompt)) {
                 LOGGER.Trace("Window 0x{hwnd:x} is not a Windows Security window", fidoPrompt.HWnd);
@@ -38,28 +36,38 @@ public class WindowsSecurityKeyChooser(ChooserOptions options): AbstractSecurity
                 return;
             }
 
-            LOGGER.Trace("Found outerScrollViewer, looking for dialog title");
+            LOGGER.Trace("Found outerScrollViewer, looking for dialog icon and title");
+
+            // #36: detect OS version using caption icon automation ID instead of title, which collides between versions in 19% of languages
+            if (strategy == null) {
+                // Icon appears with neither AutomationElement.FindFirst nor Inspect's UIA Content or Control Views, only Raw View
+                string? captionIconAutomationId = TreeWalker.RawViewWalker.GetFirstChild(fidoEl).Current.AutomationId;
+                strategy = captionIconAutomationId switch {
+                    "WindowLogo"         => new Win1123H2Strategy(options),
+                    "WindowSecurityLogo" => new Win1125H2Strategy(options),
+                    _                    => null
+                };
+
+                if (strategy == null) {
+                    LOGGER.Error("Unsupported OS dialog version, Windows Security dialog box caption icon has unrecognized automation ID {id}", captionIconAutomationId);
+                    return;
+                }
+            }
 
             // #21: title not rendered immediately
             if (outerScrollViewer.WaitForFirst(TreeScope.Children, TITLE_CONDITION, TimeSpan.FromSeconds(5), Startup.EXITING) is not { } titleLabel) {
-                LOGGER.Debug("Window is not a passkey choice prompt because there is no TextBlock child of the ScrollViewer after retrying for {0:N3}", overallStopwatch.Elapsed.TotalSeconds);
+                LOGGER.Debug("Window is not a passkey choice prompt because there is no TextBlock child of the ScrollViewer after retrying for {0:N3}", options.overallStopwatch.Elapsed.TotalSeconds);
                 return;
             }
 
-            PromptStrategy strategy;
-            string?        actualTitle = titleLabel.GetCurrentPropertyValue(AutomationElement.NameProperty) as string;
-            if (hasTitle(I18N.getStrings(I18N.Key.CHOOSE_A_PASSKEY).Concat(options.skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.SIGN_IN_WITH_A_PASSKEY) : []))) {
-                strategy = new Win1125H2Strategy(options);
-            } else if (hasTitle(I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY).Concat(options.skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : []))) {
-                strategy = new Win1123H2Strategy(options);
-            } else {
+            string? actualTitle = titleLabel.GetCurrentPropertyValue(AutomationElement.NameProperty) as string;
+
+            if (!strategy.canHandleTitle(actualTitle)) {
                 LOGGER.Debug("Window is not a passkey choice prompt because the first TextBlock child of the ScrollViewer has the name {actual}", actualTitle);
                 return;
+            } else {
+                LOGGER.Trace("Window 0x{hwnd:x} is a Windows Security window", fidoPrompt.HWnd);
             }
-
-            bool hasTitle(IEnumerable<string> expectedTitles) => expectedTitles.Any(expected => expected.Equals(actualTitle, StringComparison.CurrentCulture));
-
-            LOGGER.Trace("Window 0x{hwnd:x} is a Windows Security window", fidoPrompt.HWnd);
 
             bool isShiftDown = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 

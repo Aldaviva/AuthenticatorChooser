@@ -16,6 +16,10 @@ public class Win1125H2Strategy(ChooserOptions options): Win11Strategy(options) {
         new PropertyCondition(AutomationElement.ClassNameProperty, "TextBlock"),
         new PropertyCondition(AutomationElement.HeadingLevelProperty, AutomationHeadingLevel.None));
 
+    public override bool canHandleTitle(string? actualTitle) => I18N.getStrings(I18N.Key.CHOOSE_A_PASSKEY)
+        .Concat(options.skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.SIGN_IN_WITH_A_PASSKEY) : [])
+        .Any(expected => expected.Equals(actualTitle, StringComparison.CurrentCulture));
+
     public override void submitChoice(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown) {
         if (I18N.getStrings(I18N.Key.CHOOSE_A_PASSKEY).Contains(actualTitle, StringComparer.CurrentCulture)) {
             if (findAuthenticatorChoices(outerScrollViewer) is not { } authenticatorChoices) return;

@@ -4,6 +4,6 @@ namespace AuthenticatorChooser;
 
 public readonly record struct ChooserOptions(bool skipAllNonSecurityKeyOptions) {
 
-    public Stopwatch overallStopwatch { get; init; } = null!;
+    public Stopwatch overallStopwatch { get; } = new();
 
 }

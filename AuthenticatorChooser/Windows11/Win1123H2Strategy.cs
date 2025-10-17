@@ -9,6 +9,10 @@ public class Win1123H2Strategy(ChooserOptions options): Win11Strategy(options) {
 
     private static readonly Condition NEXT_BUTTON_CONDITION = new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton");
 
+    public override bool canHandleTitle(string? actualTitle) => I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY)
+        .Concat(options.skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : [])
+        .Any(expected => expected.Equals(actualTitle, StringComparison.CurrentCulture));
+
     /**
      * If we're on the TPM dialog, and the user wants to absolutely always use security keys, then we just selected "Use another device" to see the list of all authenticator choices, so the dialog is closing because we selected something, so don't do anything else with the soon to be nonexistant dialog.
      * Otherwise, perform common checks like holding Shift and stopping if there are other options.

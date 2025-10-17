@@ -12,6 +12,7 @@ public abstract class Win11Strategy(ChooserOptions options): PromptStrategy {
 
     protected ChooserOptions options { get; } = options;
 
+    public abstract bool canHandleTitle(string? actualTitle);
     public abstract void submitChoice(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown);
 
     protected bool shouldSkipSubmission(AutomationElement desiredChoice, IEnumerable<AutomationElement> authenticatorChoices, bool isShiftDown) {
