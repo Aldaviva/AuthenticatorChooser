@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Alegeți o altă cheie de acces</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Ne asigurăm că sunteți dvs.</value>
+  </data>
 </root>

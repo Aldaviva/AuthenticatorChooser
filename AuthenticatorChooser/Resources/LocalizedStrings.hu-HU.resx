@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Másik hozzáférési kulcs kiválasztása</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Személyazonosság ellenőrzése</value>
+  </data>
 </root>

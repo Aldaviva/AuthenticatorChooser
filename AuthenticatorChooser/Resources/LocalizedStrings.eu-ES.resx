@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Aukeratu beste sarbide-giltza bat</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Benetan zu zarela egiaztatzen ari gara</value>
+  </data>
 </root>

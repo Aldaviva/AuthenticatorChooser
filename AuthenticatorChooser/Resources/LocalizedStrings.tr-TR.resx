@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Farklı bir geçiş anahtarı seçin</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Bu kişinin siz olduğundan emin olunuyor</value>
+  </data>
 </root>

@@ -41,6 +41,7 @@ public static partial class I18N {
         /// <summary>
         /// Making sure it’s you
         /// </summary>
+        /// <remarks>In English, this is spelled two different ways with different apostophes (straight and angled)</remarks>
         MAKING_SURE_ITS_YOU,
 
         /// <summary>
@@ -78,9 +79,10 @@ public static partial class I18N {
             [Key.WINDOWS] = getStrings(nameof(LocalizedStrings.windows), fidoCredProvMuiPath, 15, 232), // Windows
             [Key.SIGN_IN_WITH_YOUR_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithYourPasskey), webAuthnMuiPath, 4, 53), // Sign In With Your Passkey title; entry 63 has the same value
             [Key.USE_ANOTHER_DEVICE] = getStrings(nameof(LocalizedStrings.useAnotherDevice), fidoCredProvMuiPath, 15, 234), // Use another device
-            [Key.MAKING_SURE_ITS_YOU] = getStrings(nameof(LocalizedStrings.makingSureItsYou), ngcCredProvMuiPath, 35, 554), // Making sure it’s you
-            [Key.CHOOSE_A_PASSKEY] = getStrings(nameof(LocalizedStrings.chooseAPasskey), webAuthnMuiPath, 67, 1057), // Choose a passkey
-            [Key.SIGN_IN_WITH_A_PASSKEY] = getStrings(nameof(LocalizedStrings.signInWithAPasskey), webAuthnMuiPath, 65, 1037), // Sign in with a passkey
+            [Key.MAKING_SURE_ITS_YOU] = getStrings([nameof(LocalizedStrings.makingSureItsYou), nameof(LocalizedStrings.makingSureItsYou2)], getPeFileStrings(ngcCredProvMuiPath, 35, 554),
+                getPeFileStrings(webAuthnMuiPath, 1, 4)),                                                                               // Making sure it’s you
+            [Key.CHOOSE_A_PASSKEY]           = getStrings(nameof(LocalizedStrings.chooseAPasskey), webAuthnMuiPath, 67, 1057),          // Choose a passkey
+            [Key.SIGN_IN_WITH_A_PASSKEY]     = getStrings(nameof(LocalizedStrings.signInWithAPasskey), webAuthnMuiPath, 65, 1037),      // Sign in with a passkey
             [Key.CHOOSE_A_DIFFERENT_PASSKEY] = getStrings(nameof(LocalizedStrings.chooseADifferentPasskey), webAuthnMuiPath, 65, 1029), // Sign in with a passkey
         }.ToFrozenDictionary();
 
@@ -98,15 +100,18 @@ public static partial class I18N {
 
     public static IEnumerable<string> getStrings(Key key) => STRINGS[key];
 
-    // #18: The most-preferred language pack can be missing MUI files if it was installed after Windows, so always fall back to all other preferred languages
     private static IList<string> getStrings(string compiledResourceName, Func<string, string> libraryPath, int stringTableId, int stringTableEntryId) =>
-        getStrings(compiledResourceName)
-            .Concat(LOCALE_NAMES.Select(locale => getPeFileString(libraryPath(locale), stringTableId, stringTableEntryId)))
+        getStrings([compiledResourceName], getPeFileStrings(libraryPath, stringTableId, stringTableEntryId));
+
+    // #18: The most-preferred language pack can be missing MUI files if it was installed after Windows, so always fall back to all other preferred languages
+    private static IList<string> getStrings(IEnumerable<string> compiledResourceNames, params IEnumerable<IEnumerable<string>> libraryStrings) =>
+        compiledResourceNames.SelectMany(compiledResourceName => LOCALE_NAMES.Select(locale =>
+                LocalizedStrings.ResourceManager.GetString(compiledResourceName, CultureInfo.GetCultureInfo(locale))))
+            .Concat(libraryStrings.SelectMany(list => list))
             .Compact().Distinct(STRING_COMPARER).ToList();
 
-    private static IEnumerable<string> getStrings(string compiledResourceName) => LOCALE_NAMES.Select(locale =>
-            LocalizedStrings.ResourceManager.GetString(compiledResourceName, CultureInfo.GetCultureInfo(locale)))
-        .Compact().Distinct(STRING_COMPARER);
+    private static IEnumerable<string> getPeFileStrings(Func<string, string> libraryPath, int stringTableId, int stringTableEntryId) =>
+        LOCALE_NAMES.Select(locale => getPeFileString(libraryPath(locale), stringTableId, stringTableEntryId)).Compact();
 
     private static string? getPeFileString(string peFile, int stringTableId, int stringTableEntryId) {
         try {

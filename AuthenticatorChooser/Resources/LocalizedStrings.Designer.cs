@@ -88,6 +88,15 @@ namespace AuthenticatorChooser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Making sure it&apos;s you.
+        /// </summary>
+        internal static string makingSureItsYou2 {
+            get {
+                return ResourceManager.GetString("makingSureItsYou2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Security key.
         /// </summary>
         internal static string securityKey {

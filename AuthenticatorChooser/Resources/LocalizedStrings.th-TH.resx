@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>เลือกหมายเลขรหัสผ่านอื่น</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>กำลังตรวจสอบให้แน่ใจว่าเป็นคุณ</value>
+  </data>
 </root>

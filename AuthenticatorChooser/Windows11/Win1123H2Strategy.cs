@@ -8,20 +8,37 @@ public class Win1123H2Strategy(ChooserOptions options): Win11Strategy(options) {
     private static readonly Logger LOGGER = LogManager.GetLogger(typeof(Win1123H2Strategy).FullName!);
 
     public override bool canHandleTitle(string? actualTitle) => I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY)
-        .Concat(options.skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : [])
+        .Concat(options.skipAllNonSecurityKeyOptions || options.autoSubmitPinLength >= MIN_PIN_LENGTH ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : [])
         .Any(expected => expected.Equals(actualTitle, StringComparison.CurrentCulture));
 
     /**
-     * If we're on the TPM dialog, and the user wants to absolutely always use security keys, then we just selected "Use another device" to see the list of all authenticator choices, so the dialog is closing because we selected something, so don't do anything else with the soon to be nonexistant dialog.
+     * If we're on the TPM dialog, and the user wants to absolutely always use security keys, then we just selected "Use another device" to see the list of all authenticator choices, so the dialog is closing because we selected something, so don't do anything else with the soon to be nonexistent dialog.
      * Otherwise, perform common checks like holding Shift and stopping if there are other options.
      * Finally, click Next.
      */
-    public override void handleWindow(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown) {
+    public override async Task handleWindow(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown) {
+        CancellationTokenSource stopFinding = new();
+
         /*
          * If the TPM contains a passkey for this RP, Windows will ask for your fingerprint/PIN/face, and you have to select "Use another device" and click Next to see all the authenticator choices.
          * #5, #11: power series backoff, max=500 ms per attempt, ~1 minute total
          */
-        if (findAuthenticatorChoices(outerScrollViewer) is not { } authenticatorChoices) {
+        Task<IReadOnlyCollection<AutomationElement>?> authenticatorChoicesTask = findAuthenticatorChoices(outerScrollViewer, stopFinding.Token);
+
+        Task<AutomationElement?> pinFieldTask = options.autoSubmitPinLength >= MIN_PIN_LENGTH && I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU).Contains(actualTitle, StringComparer.CurrentCulture)
+            ? findPinField(outerScrollViewer, stopFinding.Token) : new TaskCompletionSource<AutomationElement?>().Task;
+
+        await Task.WhenAny(authenticatorChoicesTask, pinFieldTask);
+        await stopFinding.CancelAsync();
+
+        if (pinFieldTask.IsCompletedSuccessfully) {
+            if (pinFieldTask.Result is { } pinField) {
+                LOGGER.Debug("Found PIN field");
+                autosubmitPin(fidoEl, outerScrollViewer, pinField);
+            }
+            return;
+        }
+        if (authenticatorChoicesTask is not { IsCompletedSuccessfully: true, Result: { } authenticatorChoices }) {
             LOGGER.Warn("Could not find authenticator choices after retrying for 1 minute. Giving up and not automatically selecting Security Key.");
             return;
         }

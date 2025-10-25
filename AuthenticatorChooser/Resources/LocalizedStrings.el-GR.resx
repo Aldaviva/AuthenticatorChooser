@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Επιλογή διαφορετικού κλειδιού πρόσβασης</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Επιβεβαίωση της ταυτότητάς σας</value>
+  </data>
 </root>

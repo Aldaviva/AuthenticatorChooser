@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Choose a different passkey</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Making sure it's you</value>
+  </data>
 </root>

@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Velg en annen tilgangsnøkkel</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Vi kontrollerer at det er deg</value>
+  </data>
 </root>

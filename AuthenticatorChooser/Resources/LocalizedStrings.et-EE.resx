@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Vali muu pääsuvõti</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Kontrollime, kas see olete teie</value>
+  </data>
 </root>

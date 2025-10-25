@@ -27,17 +27,17 @@ public class Startup {
 
     // #15
     [Option("--skip-all-non-security-key-options", CommandOptionType.NoValue)]
-    public bool skipAllNonSecurityKeyOptions { get; set; }
+    public bool skipAllNonSecurityKeyOptions { get; }
 
     // #30
     [Option("--autosubmit-pin-length", CommandOptionType.SingleValue)]
-    public int? autosubmitPinLength { get; set; }
+    public int? autosubmitPinLength { get; }
 
     [Option("--autostart-on-logon", CommandOptionType.NoValue)]
-    public bool autostartOnLogon { get; set; }
+    public bool autostartOnLogon { get; }
 
     [Option("-l|--log", CommandOptionType.SingleOrNoValue)]
-    public (bool enabled, string? filename) log { get; set; }
+    public (bool enabled, string? filename) log { get; }
 
     [Option(DefaultHelpOptionConvention.DefaultHelpTemplate, CommandOptionType.NoValue)]
     public bool help { get; }
@@ -46,7 +46,7 @@ public class Startup {
     public static int Main(string[] args) {
         try {
             using var app = new CommandLineApplication<Startup> {
-                UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw,
+                UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw
             };
             app.Conventions.UseDefaultConventions();
             return app.Execute(args);
@@ -149,8 +149,11 @@ public class Startup {
              {processFilename} --skip-all-non-security-key-options
                  Forces this program to choose the Security Key option even if there are other valid options, such as an already-paired phone or Windows Hello PIN or biometrics. By default, without this option, it will only choose the Security Key if the sole other option is pairing a new phone. This is an aggressive behavior, so if it skips an option you need, remember that you can hold Shift when the FIDO prompt appears to temporarily disable this program and manually choose a different option.
                  
-             {processFilename} --log[=filename]
-                 Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify a filename, it goes to {Path.Combine(Environment.GetEnvironmentVariable("TEMP") ?? "%TEMP%", PROGRAM_NAME + ".log")}.
+             {processFilename} --autosubmit-pin-length=$num
+                 When Windows prompts you for the FIDO PIN for your USB security key, automatically submit the dialog once you have typed a PIN that is $num characters long (minimum 4), instead of you manually pressing Enter. Remember that enough consecutive incorrect submissions (8 on YubiKeys) will permanently block the security key until you reset it and lose all its FIDO credentials, so type with care. This will neither autosubmit PINs when registering a new FIDO credential, changing your PIN, or entering a Windows Hello PIN (which Windows autosubmits without this program's help).
+                 
+             {processFilename} --log[=$filename]
+                 Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify $filename, it goes to {Path.Combine(Environment.GetEnvironmentVariable("TEMP") ?? "%TEMP%", PROGRAM_NAME + ".log")}.
                
              {processFilename} --help
                  Shows this usage.

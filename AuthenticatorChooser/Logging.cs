@@ -8,7 +8,7 @@ namespace AuthenticatorChooser;
 internal static class Logging {
 
     private static readonly SimpleLayout MESSAGE_FORMAT = new(
-        " ${level:format=FirstCharacter:lowercase=true} | ${date:format=yyyy-MM-dd HH\\:mm\\:ss.fff} | ${logger:shortName=true:padding=-26} | ${message:withException=true:exceptionSeparator=\n}");
+        " ${level:format=FirstCharacter:lowercase=true} | ${date:format=yyyy-MM-dd HH\\:mm\\:ss.fff} | ${logger:shortName=true:padding=-25} | ${message:withException=true:exceptionSeparator=\n}");
 
     private static readonly LogLevel LOG_LEVEL = LogLevel.Debug;
 

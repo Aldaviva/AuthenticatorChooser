@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>다른 암호 키 선택</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>본인 확인 중</value>
+  </data>
 </root>

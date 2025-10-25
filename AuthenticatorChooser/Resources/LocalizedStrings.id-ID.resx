@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Pilih kunci sandi lain</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Memastikan bahwa ini adalah Anda</value>
+  </data>
 </root>

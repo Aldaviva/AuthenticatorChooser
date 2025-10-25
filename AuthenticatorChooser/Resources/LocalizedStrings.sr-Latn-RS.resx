@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Izaberite drugi pristupni ključ</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Proveravamo da li ste to zaista vi</value>
+  </data>
 </root>

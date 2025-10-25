@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>Izvēlieties citu ieejas atslēgu</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>Notiek jūsu identitātes pārbaude</value>
+  </data>
 </root>

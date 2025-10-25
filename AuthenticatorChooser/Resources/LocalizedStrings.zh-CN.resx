@@ -144,4 +144,7 @@
   <data name="chooseADifferentPasskey" xml:space="preserve">
     <value>选择其他通行密钥</value>
   </data>
+  <data name="makingSureItsYou2" xml:space="preserve">
+    <value>确保这是你本人</value>
+  </data>
 </root>
