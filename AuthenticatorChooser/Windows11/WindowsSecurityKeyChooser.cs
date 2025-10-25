@@ -71,7 +71,7 @@ public class WindowsSecurityKeyChooser(ChooserOptions options): AbstractSecurity
 
             bool isShiftDown = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 
-            strategy.submitChoice(actualTitle!, fidoEl, outerScrollViewer, isShiftDown);
+            strategy.handleWindow(actualTitle!, fidoEl, outerScrollViewer, isShiftDown);
 
         } catch (ElementNotAvailableException e) {
             LOGGER.Error(e, "Element in Windows Security dialog box disappeared before this program could interact with it, skipping this dialog box instance");

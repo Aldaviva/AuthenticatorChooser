@@ -7,8 +7,6 @@ public class Win1123H2Strategy(ChooserOptions options): Win11Strategy(options) {
 
     private static readonly Logger LOGGER = LogManager.GetLogger(typeof(Win1123H2Strategy).FullName!);
 
-    private static readonly Condition NEXT_BUTTON_CONDITION = new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton");
-
     public override bool canHandleTitle(string? actualTitle) => I18N.getStrings(I18N.Key.SIGN_IN_WITH_YOUR_PASSKEY)
         .Concat(options.skipAllNonSecurityKeyOptions ? I18N.getStrings(I18N.Key.MAKING_SURE_ITS_YOU) : [])
         .Any(expected => expected.Equals(actualTitle, StringComparison.CurrentCulture));
@@ -18,7 +16,7 @@ public class Win1123H2Strategy(ChooserOptions options): Win11Strategy(options) {
      * Otherwise, perform common checks like holding Shift and stopping if there are other options.
      * Finally, click Next.
      */
-    public override void submitChoice(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown) {
+    public override void handleWindow(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown) {
         /*
          * If the TPM contains a passkey for this RP, Windows will ask for your fingerprint/PIN/face, and you have to select "Use another device" and click Next to see all the authenticator choices.
          * #5, #11: power series backoff, max=500 ms per attempt, ~1 minute total

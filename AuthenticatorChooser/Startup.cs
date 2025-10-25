@@ -27,19 +27,34 @@ public class Startup {
 
     // #15
     [Option("--skip-all-non-security-key-options", CommandOptionType.NoValue)]
-    public bool skipAllNonSecurityKeyOptions { get; }
+    public bool skipAllNonSecurityKeyOptions { get; set; }
+
+    // #30
+    [Option("--autosubmit-pin-length", CommandOptionType.SingleValue)]
+    public int? autosubmitPinLength { get; set; }
 
     [Option("--autostart-on-logon", CommandOptionType.NoValue)]
-    public bool autostartOnLogon { get; }
+    public bool autostartOnLogon { get; set; }
 
     [Option("-l|--log", CommandOptionType.SingleOrNoValue)]
-    public (bool enabled, string? filename) log { get; }
+    public (bool enabled, string? filename) log { get; set; }
 
     [Option(DefaultHelpOptionConvention.DefaultHelpTemplate, CommandOptionType.NoValue)]
     public bool help { get; }
 
     [STAThread]
-    public static int Main(string[] args) => CommandLineApplication.Execute<Startup>(args);
+    public static int Main(string[] args) {
+        try {
+            using var app = new CommandLineApplication<Startup> {
+                UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw,
+            };
+            app.Conventions.UseDefaultConventions();
+            return app.Execute(args);
+        } catch (CommandParsingException e) {
+            MessageBox.Show(e.Message, $"{PROGRAM_NAME} {PROGRAM_VERSION}", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return 1;
+        }
+    }
 
     // ReSharper disable once UnusedMember.Global - it's actually invoked by McMaster.Extensions.CommandLineUtils
     // ReSharper disable once InconsistentNaming - it must be named this, as dictated by McMaster.Extensions.CommandLineUtils, it's not my choice
@@ -74,7 +89,7 @@ public class Startup {
                 logger.Info("{Locales are} {locales}", I18N.LOCALE_NAMES.Count == 1 ? "Locale is" : "Locales are", string.Join(", ", I18N.LOCALE_NAMES));
 
                 using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
-                WindowsSecurityKeyChooser   securityKeyChooser    = new(new ChooserOptions(skipAllNonSecurityKeyOptions));
+                WindowsSecurityKeyChooser   securityKeyChooser    = new(new ChooserOptions(skipAllNonSecurityKeyOptions, autosubmitPinLength));
 
                 windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
 

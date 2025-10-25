@@ -8,12 +8,13 @@ public abstract class Win11Strategy(ChooserOptions options): PromptStrategy {
 
     private static readonly Logger LOGGER = LogManager.GetLogger(typeof(Win11Strategy).FullName!);
 
-    private static readonly Condition CHOICES_LIST_CONDITION = new PropertyCondition(AutomationElement.ClassNameProperty, "ListView");
+    private static readonly   Condition CHOICES_LIST_CONDITION = new PropertyCondition(AutomationElement.ClassNameProperty, "ListView");
+    protected static readonly Condition NEXT_BUTTON_CONDITION  = new PropertyCondition(AutomationElement.AutomationIdProperty, "OkButton");
 
     protected ChooserOptions options { get; } = options;
 
     public abstract bool canHandleTitle(string? actualTitle);
-    public abstract void submitChoice(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown);
+    public abstract void handleWindow(string actualTitle, AutomationElement fidoEl, AutomationElement outerScrollViewer, bool isShiftDown);
 
     protected bool shouldSkipSubmission(AutomationElement desiredChoice, IEnumerable<AutomationElement> authenticatorChoices, bool isShiftDown) {
         if (isShiftDown) {
