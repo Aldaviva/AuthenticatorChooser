@@ -22,9 +22,9 @@
       },
       "NLog": {
         "type": "Direct",
-        "requested": "[6.0.5, )",
-        "resolved": "6.0.5",
-        "contentHash": "Gq/L18qnZhIfrfqXtUBKdDMtT8cZB+974C99H+w6DxdlIcT4wYCCGjRgnUij3spUH1HWScF6JRaCyv11CHZJ6g=="
+        "requested": "[6.0.6, )",
+        "resolved": "6.0.6",
+        "contentHash": "eUd/LDIwPtufj5OxtzFYiwuoKpzaS87iqO9P9D05avLCk4jIoOlqMwRH0o/43LmzM+CmgVAdDrCOq/rOK0sDKw=="
       },
       "System.Management": {
         "type": "Direct",
@@ -43,12 +43,12 @@
       },
       "Unfucked.Windows": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.5, )",
-        "resolved": "0.0.1-beta.5",
-        "contentHash": "ywiO7EUXzacJvicTEOKqD4skEGJawVdYAJvzmQvOkM55BdK/o4APoqI49171PmA4TJhzcExbNmN+gr1kfIVigw==",
+        "requested": "[0.0.1-beta.6, )",
+        "resolved": "0.0.1-beta.6",
+        "contentHash": "i2ZTvgSm5ARCwbXQ9vyX0L+JK8t/DfjXwdytp2DxbNi+ztHg6XX/qo+8RLa0zWc+/K3lVNsySSexovfk82/k1g==",
         "dependencies": {
           "ThrottleDebounce": "3.0.0-beta5",
-          "Unfucked": "0.0.1-beta.9",
+          "Unfucked": "0.0.1-beta.20",
           "mwinapi": "0.3.0.5"
         }
       },
@@ -87,8 +87,8 @@
       },
       "Unfucked": {
         "type": "Transitive",
-        "resolved": "0.0.1-beta.9",
-        "contentHash": "rwjRGKTGiwK5ZASsGFi3iKcJNMvALBlJ0HZzt7We0d8mfL0TgXpfXE+Icg97jvtJdHmH1pc446tb27LULFJKTQ=="
+        "resolved": "0.0.1-beta.20",
+        "contentHash": "ZTjPP+8LizYyxTUYrZMcvYX9KPMnsHQu70epBvT7Ka3Egn1VHvm6vF9bsVLxzqArBhGpBifIL6quIz4Mp3GXnA=="
       },
       "Workshell.PE": {
         "type": "Transitive",
