@@ -31,7 +31,7 @@
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
         <PackageReference Include="NLog" Version="6.0.7" />
-        <PackageReference Include="System.Management" Version="9.0.10" />
+        <PackageReference Include="System.Management" Version="10.0.1" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta5" />
         <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.6" />
         <PackageReference Include="Workshell.PE.Resources" Version="4.0.0.147" />
