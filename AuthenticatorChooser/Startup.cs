@@ -136,7 +136,7 @@ public class Startup {
             scheduledTask.RegistrationInfo.Date   = DateTime.Now;
             scheduledTask.RegistrationInfo.Description =
                 $"{PROGRAM_NAME} is a background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts. \n\nThis scheduled task is necessary to start {PROGRAM_NAME} for you on login with elevated permissions, which are required to interact with the Windows 11 FIDO prompts beginning in January 2026. \n\nhttps://github.com/Aldaviva/{PROGRAM_NAME}";
-            scheduledTask.Principal.RunLevel                  = TaskRunLevel.Highest; // #44
+            scheduledTask.Principal.RunLevel                  = TaskRunLevel.Highest; // #44: CredentialUIBroker runs with UIAccess integrity level, which is higher than the default Medium level
             scheduledTask.Settings.Enabled                    = true;
             scheduledTask.Settings.ExecutionTimeLimit         = TimeSpan.Zero;
             scheduledTask.Settings.DisallowStartIfOnBatteries = false;
@@ -146,6 +146,17 @@ public class Startup {
             scheduledTask.Triggers.Add(new LogonTrigger { Enabled = true, UserId = domainAndUsername, Delay = TimeSpan.FromSeconds(15) });
             TaskService.Instance.RootFolder.RegisterTaskDefinition($"{PROGRAM_NAME} \u2013 {Environment.UserName}", scheduledTask, TaskCreation.CreateOrUpdate, domainAndUsername, null,
                 TaskLogonType.InteractiveToken);
+
+            // #44: Remove the old 0.4.0 registry startup entry, which is no longer adequate. This removal avoid both starting twice and showing a UAC prompt on each login.
+            using RegistryKey? userRun = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            if (userRun is not null) {
+                try {
+                    userRun.DeleteValue(PROGRAM_NAME, true);
+                    logger!.Info("Removed old registry startup entry, which has now been replaced with a Scheduled Task.");
+                } catch (ArgumentException) {
+                    // value had already been removed from the registry before this execution
+                }
+            }
 
             MessageBox.Show($"{PROGRAM_NAME} is now running in the background, and will also start automatically each time you log in to Windows.", PROGRAM_NAME, MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
