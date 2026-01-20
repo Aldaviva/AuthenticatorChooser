@@ -1,4 +1,4 @@
-﻿<!--EXTERNAL_PROPERTIES: GITHUB_ACTIONS-->
+<!--EXTERNAL_PROPERTIES: GITHUB_ACTIONS-->
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
@@ -9,7 +9,7 @@
         <Nullable>enable</Nullable>
         <Version>0.5.0</Version>
         <Authors>Ben Hutchison</Authors>
-        <Copyright>© 2025 $(Authors)</Copyright>
+        <Copyright>© 2026 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
         <RollForward>major</RollForward>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -46,7 +46,7 @@
         <EmbeddedResource Update="Resources\LocalizedStrings.resx" Generator="ResXFileCodeGenerator" LastGenOutput="LocalizedStrings.Designer.cs" />
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' == 'Release'">
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' != 'Debug'">
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     </PropertyGroup>
 

@@ -1,9 +1,9 @@
-﻿<img src="AuthenticatorChooser/YubiKey.ico" height="24" alt="YubiKey 5 NFC USB-A" /> AuthenticatorChooser
+<img src="AuthenticatorChooser/YubiKey.ico" height="24" alt="YubiKey 5 NFC USB-A" /> AuthenticatorChooser
 ===
 
 [![Build status](https://img.shields.io/github/actions/workflow/status/Aldaviva/AuthenticatorChooser/dotnet.yml?branch=master&logo=github)](https://github.com/Aldaviva/AuthenticatorChooser/actions/workflows/dotnet.yml)
 
-*Program that runs in the background to automatically skip the Windows passkey phone pairing option and go straight to the USB security key.*
+*Background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts.*
 
 <!-- MarkdownTOC autolink="true" bracket="round" autoanchor="false" levels="1,2" -->
 
@@ -102,8 +102,8 @@ If you want to build this application yourself instead of downloading precompile
     cd .\AuthenticatorChooser\AuthenticatorChooser\
     ```
 1. Choose one of the [version tags](https://github.com/Aldaviva/AuthenticatorChooser/tags) to build, or skip this step to use the head commit on the `master` branch.
-    ```ps1
-    git checkout 0.4.0
+    ```sh
+    git checkout 0.5.0
     ```
 1. Build the program.
     ```ps1
@@ -115,9 +115,9 @@ The program will be compiled to the following path, assuming your CPU architectu
 .\bin\Release\net8.0-windows\win-x64\publish\AuthenticatorChooser.exe
 ```
 
-You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 instead of the command line if you prefer.
+You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 or 2026 instead of the command line if you prefer.
 
-- Visual Studio Publishing Profiles have been broken for years unless certain other workloads (like ASP.NET Web Development) are installed, so if you can't publish from VS you'll have to use the `dotnet publish` command above.
+- Visual Studio Publishing Profiles have been [broken for years](https://developercommunity.visualstudio.com/t/Trying-to-publish-to-a-folder-only-build/10905900) unless certain other workloads (like ASP.NET Web Development) are installed, so if you can't publish from VS you'll have to use the `dotnet publish` command above.
 
 ## Related
 
