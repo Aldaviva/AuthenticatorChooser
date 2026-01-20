@@ -22,6 +22,7 @@ public class Startup {
     private static readonly string                  PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
     private static readonly CancellationTokenSource EXITING_TRIGGER = new();
     public static readonly  CancellationToken       EXITING         = EXITING_TRIGGER.Token;
+    private static readonly WindowsIdentity         CURRENT_USER    = WindowsIdentity.GetCurrent();
 
     private static Logger? logger;
 
@@ -76,7 +77,8 @@ public class Startup {
                 return 1;
             }
 
-            using Mutex singleInstanceLock = new(true, $@"Local\{PROGRAM_NAME}_{WindowsIdentity.GetCurrent().User?.Value}", out bool isOnlyInstance);
+            using Mutex singleInstanceLock = new(true, $@"Local\{PROGRAM_NAME}_{CURRENT_USER.User?.Value}", out bool isOnlyInstance);
+            CURRENT_USER.Dispose();
             if (!isOnlyInstance) {
                 logger.Warn("Another instance of {program} is already running for this user, this instance is exiting now.", PROGRAM_NAME);
                 return 2;
@@ -121,25 +123,29 @@ public class Startup {
             return 1;
         } finally {
             LogManager.Shutdown();
+            CURRENT_USER.Dispose();
         }
     }
 
     private bool registerAsStartupProgram() {
         try {
+            string domainAndUsername = CURRENT_USER.Name;
+
             TaskDefinition scheduledTask = TaskService.Instance.NewTask();
             scheduledTask.RegistrationInfo.Author = "Ben Hutchison";
             scheduledTask.RegistrationInfo.Date   = DateTime.Now;
             scheduledTask.RegistrationInfo.Description =
-                "Background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts.\n\nhttps://github.com/Aldaviva/AuthenticatorChooser";
+                $"{PROGRAM_NAME} is a background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts. \n\nThis scheduled task is necessary to start {PROGRAM_NAME} for you on login with elevated permissions, which are required to interact with the Windows 11 FIDO prompts beginning in January 2026. \n\nhttps://github.com/Aldaviva/{PROGRAM_NAME}";
             scheduledTask.Principal.RunLevel                  = TaskRunLevel.Highest; // #44
             scheduledTask.Settings.Enabled                    = true;
             scheduledTask.Settings.ExecutionTimeLimit         = TimeSpan.Zero;
             scheduledTask.Settings.DisallowStartIfOnBatteries = false;
             scheduledTask.Settings.StopIfGoingOnBatteries     = false;
             scheduledTask.Settings.Compatibility              = TaskCompatibility.V2_3;
-            scheduledTask.Actions.Add(Environment.ProcessPath!, skipAllNonSecurityKeyOptions ? "--skip-all-non-security-key-options" : string.Empty);
-            scheduledTask.Triggers.Add(new LogonTrigger { Enabled = true, UserId = WindowsIdentity.GetCurrent().User?.Value ?? Environment.UserName, Delay = TimeSpan.FromSeconds(15) });
-            TaskService.Instance.RootFolder.RegisterTaskDefinition(PROGRAM_NAME, scheduledTask, TaskCreation.CreateOrUpdate, null, logonType: TaskLogonType.InteractiveToken);
+            scheduledTask.Actions.Add(Environment.ProcessPath!, skipAllNonSecurityKeyOptions ? "--skip-all-non-security-key-options" : null);
+            scheduledTask.Triggers.Add(new LogonTrigger { Enabled = true, UserId = domainAndUsername, Delay = TimeSpan.FromSeconds(15) });
+            TaskService.Instance.RootFolder.RegisterTaskDefinition($"{PROGRAM_NAME} \u2013 {Environment.UserName}", scheduledTask, TaskCreation.CreateOrUpdate, domainAndUsername, null,
+                TaskLogonType.InteractiveToken);
 
             MessageBox.Show($"{PROGRAM_NAME} is now running in the background, and will also start automatically each time you log in to Windows.", PROGRAM_NAME, MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
