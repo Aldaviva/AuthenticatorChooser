@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net8.0-windows7.0": {
+      "DarkNet": {
+        "type": "Direct",
+        "requested": "[2.3.0, )",
+        "resolved": "2.3.0",
+        "contentHash": "yvITcWhHUAEoKet8mv7S442MbjtjhpXO/mMCXcwLAqEQrDZwSSOdWbTG2fqv7DvIEUOyZtzjmy5J4ZBiZN5gOA=="
+      },
       "McMaster.Extensions.CommandLineUtils": {
         "type": "Direct",
         "requested": "[4.1.1, )",

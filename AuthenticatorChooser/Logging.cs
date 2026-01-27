@@ -2,6 +2,7 @@ using NLog;
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
+using System.IO;
 
 namespace AuthenticatorChooser;
 

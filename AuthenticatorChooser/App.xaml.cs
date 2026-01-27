@@ -1,37 +1,39 @@
 using AuthenticatorChooser.WindowOpening;
 using AuthenticatorChooser.Windows11;
+using Dark.Net;
 using ManagedWinapi.Windows;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Conventions;
 using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using NLog;
+using System.IO;
 using System.Reflection;
 using System.Security.Principal;
-using System.Windows.Forms;
+using System.Windows;
+using Unfucked;
 
 // ReSharper disable ClassNeverInstantiated.Global - it's actually instantiated by McMaster.Extensions.CommandLineUtils
 // ReSharper disable UnassignedGetOnlyAutoProperty - it's actually assigned by McMaster.Extensions.CommandLineUtils
 
 namespace AuthenticatorChooser;
 
-public class Startup {
+public partial class App {
 
-    private const string PROGRAM_NAME = nameof(AuthenticatorChooser);
+    public const string PROGRAM_NAME = nameof(AuthenticatorChooser);
 
-    private static readonly string                  PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
-    private static readonly CancellationTokenSource EXITING_TRIGGER = new();
-    public static readonly  CancellationToken       EXITING         = EXITING_TRIGGER.Token;
-    private static readonly WindowsIdentity         CURRENT_USER    = WindowsIdentity.GetCurrent();
+    private static readonly string          PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
+    private static readonly WindowsIdentity CURRENT_USER    = WindowsIdentity.GetCurrent();
 
     private static Logger? logger;
 
-    // #15
-    [Option("--skip-all-non-security-key-options", CommandOptionType.NoValue)]
+    private readonly CancellationTokenSource exitingTrigger = new();
+    public CancellationToken exiting => exitingTrigger.Token;
+
+    [Option("--skip-all-non-security-key-options", CommandOptionType.NoValue)] // #15
     public bool skipAllNonSecurityKeyOptions { get; }
 
-    // #30
-    [Option("--autosubmit-pin-length", CommandOptionType.SingleValue)]
+    [Option("--autosubmit-pin-length", CommandOptionType.SingleValue)] // #30
     public int? autosubmitPinLength { get; }
 
     [Option("--autostart-on-logon", CommandOptionType.NoValue)]
@@ -43,29 +45,45 @@ public class Startup {
     [Option(DefaultHelpOptionConvention.DefaultHelpTemplate, CommandOptionType.NoValue)]
     public bool help { get; }
 
-    [STAThread]
-    public static int Main(string[] args) {
-        try {
-            using var app = new CommandLineApplication<Startup> {
+    // ReSharper disable once InconsistentNaming - did you not see the "new" keyword?
+    public new static App Current => (App) Application.Current;
+
+    protected override void OnStartup(StartupEventArgs e) {
+        base.OnStartup(e);
+        DarkNet.Instance.SetCurrentProcessTheme(Theme.Auto);
+
+        MainWindow window = new();
+        window.ShowDialog();
+        Shutdown(0);
+
+        //TODO
+        /*try {
+            using var app = new CommandLineApplication<App> {
                 UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.Throw
             };
             app.Conventions.UseDefaultConventions();
-            return app.Execute(args);
-        } catch (CommandParsingException e) {
-            MessageBox.Show(e.Message, $"{PROGRAM_NAME} {PROGRAM_VERSION}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return 1;
-        }
+            _ = Task.Run(async () => {
+                int exitCode = await app.ExecuteAsync(e.Args, exiting);
+                Shutdown(exitCode);
+            }, exiting);
+        } catch (CommandParsingException err) {
+            MessageBox.Show(err.Message, $"{PROGRAM_NAME} {PROGRAM_VERSION}", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1);
+        }*/
+    }
+
+    protected override void OnExit(ExitEventArgs e) {
+        exitingTrigger.Cancel();
+        LogManager.Shutdown();
+        CURRENT_USER.Dispose();
+        base.OnExit(e);
     }
 
     // ReSharper disable once UnusedMember.Global - it's actually invoked by McMaster.Extensions.CommandLineUtils
     // ReSharper disable once InconsistentNaming - it must be named this, as dictated by McMaster.Extensions.CommandLineUtils, it's not my choice
-    public int OnExecute() {
-        Application.SetCompatibleTextRenderingDefault(false);
-        Application.EnableVisualStyles();
-        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-
+    public async Task<int> OnExecute() {
         Logging.initialize(log.enabled, log.filename);
-        logger = LogManager.GetLogger(typeof(Startup).FullName!);
+        logger = LogManager.GetLogger(typeof(App).FullName!);
 
         try {
             if (help) {
@@ -105,13 +123,12 @@ public class Startup {
 
                 Console.CancelKeyPress += (_, args) => {
                     args.Cancel = true;
-                    EXITING_TRIGGER.Cancel();
-                    Application.Exit();
+                    exitingTrigger.Cancel();
                 };
 
                 SystemEvents.SessionEnding += onWindowsLogoff;
 
-                Application.Run();
+                await exiting.Wait();
             } finally {
                 singleInstanceLock.ReleaseMutex();
             }
@@ -119,11 +136,8 @@ public class Startup {
             return 0;
         } catch (Exception e) when (e is not OutOfMemoryException) {
             logger.Error(e, "Uncaught exception");
-            MessageBox.Show($"Uncaught exception: {e}", PROGRAM_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Uncaught exception: {e}", PROGRAM_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
             return 1;
-        } finally {
-            LogManager.Shutdown();
-            CURRENT_USER.Dispose();
         }
     }
 
@@ -158,11 +172,11 @@ public class Startup {
                 }
             }
 
-            MessageBox.Show($"{PROGRAM_NAME} is now running in the background, and will also start automatically each time you log in to Windows.", PROGRAM_NAME, MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            MessageBox.Show($"{PROGRAM_NAME} is now running in the background, and will also start automatically each time you log in to Windows.", PROGRAM_NAME, MessageBoxButton.OK,
+                MessageBoxImage.Information);
             return true;
         } catch (Exception e) when (e is not OutOfMemoryException) {
-            MessageBox.Show($"Failed to register {PROGRAM_NAME} to start automatically on Windows logon: {e.GetType().Name} {e.Message}", PROGRAM_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Failed to register {PROGRAM_NAME} to start automatically on Windows logon: {e.GetType().Name} {e.Message}", PROGRAM_NAME, MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
     }
@@ -191,13 +205,13 @@ public class Startup {
                 
             For more information, see https://github.com/Aldaviva/{PROGRAM_NAME}.
             Press Ctrl+C to copy this message.
-            """, $"{PROGRAM_NAME} {PROGRAM_VERSION} usage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            """, $"{PROGRAM_NAME} {PROGRAM_VERSION} usage", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
-    private static void onWindowsLogoff(object sender, SessionEndingEventArgs args) {
+    private void onWindowsLogoff(object sender, SessionEndingEventArgs args) {
         logger?.Info("Exiting due to Windows session ending for {0}", args.Reason);
         SystemEvents.SessionEnding -= onWindowsLogoff;
-        Application.Exit();
+        Shutdown(0);
     }
 
 }

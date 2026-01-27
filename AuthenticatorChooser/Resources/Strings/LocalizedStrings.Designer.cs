@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AuthenticatorChooser.Resources {
+namespace AuthenticatorChooser.Resources.Strings {
     using System;
     
     
@@ -19,7 +19,7 @@ namespace AuthenticatorChooser.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class LocalizedStrings {
@@ -39,7 +39,7 @@ namespace AuthenticatorChooser.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AuthenticatorChooser.Resources.LocalizedStrings", typeof(LocalizedStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AuthenticatorChooser.Resources.Strings.LocalizedStrings", typeof(LocalizedStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

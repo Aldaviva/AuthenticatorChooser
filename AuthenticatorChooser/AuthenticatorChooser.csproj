@@ -20,14 +20,18 @@
         <DebugType>embedded</DebugType>
         <LangVersion>latest</LangVersion>
         <SelfContained>false</SelfContained>
+        <UseWPF>true</UseWPF>
     </PropertyGroup>
 
     <ItemGroup>
         <Content Include="YubiKey.ico" />
+        <Resource Include="Resources/Images/*.png" />
         <None Include="..\Readme.md;..\.github*\**" />
     </ItemGroup>
 
+
     <ItemGroup>
+        <PackageReference Include="DarkNet" Version="2.3.0" />
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
         <PackageReference Include="NLog" Version="6.0.7" />
@@ -42,9 +46,10 @@
         <FrameworkReference Include="Microsoft.WindowsDesktop.App" /> <!-- UseWindowsForms is insufficient to refer to UIAutomationClient -->
     </ItemGroup>
 
+
     <ItemGroup>
-        <Compile Update="Resources\LocalizedStrings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="LocalizedStrings.resx" />
-        <EmbeddedResource Update="Resources\LocalizedStrings.resx" Generator="ResXFileCodeGenerator" LastGenOutput="LocalizedStrings.Designer.cs" />
+        <Compile Update="Resources\Strings\LocalizedStrings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="LocalizedStrings.resx" />
+        <EmbeddedResource Update="Resources\Strings\LocalizedStrings.resx" Generator="ResXFileCodeGenerator" LastGenOutput="LocalizedStrings.Designer.cs" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' != 'Debug'">

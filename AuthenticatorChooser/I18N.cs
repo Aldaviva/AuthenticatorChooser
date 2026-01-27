@@ -1,6 +1,7 @@
-using AuthenticatorChooser.Resources;
+using AuthenticatorChooser.Resources.Strings;
 using System.Collections.Frozen;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using Unfucked;
 using Workshell.PE;
@@ -119,7 +120,7 @@ public static partial class I18N {
                 if (!DLL_CACHE.TryGetValue(peFile, out PortableExecutableImage? file)) {
                     try {
                         file = PortableExecutableImage.FromFile(peFile);
-                    } catch (FileNotFoundException) { } catch (DirectoryNotFoundException) { }
+                    } catch (FileNotFoundException) {} catch (DirectoryNotFoundException) {}
                     DLL_CACHE.Add(peFile, file);
                 }
 

@@ -1,6 +1,7 @@
 using NLog;
 using System.Windows.Automation;
 using Unfucked;
+using Condition = System.Windows.Automation.Condition;
 
 namespace AuthenticatorChooser.Windows11;
 
@@ -32,7 +33,7 @@ public abstract class Win11Strategy(ChooserOptions options): PromptStrategy {
     }
 
     protected static async Task<IReadOnlyCollection<AutomationElement>?> findAuthenticatorChoices(AutomationElement outerScrollViewer, CancellationToken ct = default) {
-        using CancellationTokenSource stopFinding = CancellationTokenSource.CreateLinkedTokenSource(Startup.EXITING, ct);
+        using CancellationTokenSource stopFinding = CancellationTokenSource.CreateLinkedTokenSource(App.Current.exiting, ct);
         IReadOnlyList<AutomationElement>? authenticatorChoices =
             await outerScrollViewer.WaitForFirstAsync(TreeScope.Children, CHOICES_LIST_CONDITION, el => Task.FromResult(el.Children().ToList()), TimeSpan.FromSeconds(30), stopFinding.Token);
         if (authenticatorChoices == null) {

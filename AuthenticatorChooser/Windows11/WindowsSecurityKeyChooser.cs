@@ -31,7 +31,7 @@ public class WindowsSecurityKeyChooser(ChooserOptions options): AbstractSecurity
             }
 
             AutomationElement? fidoEl = fidoPrompt.ToAutomationElement();
-            if (fidoEl?.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.ClassNameProperty, "ScrollViewer")) is not { } outerScrollViewer) {
+            if (fidoEl?.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.ClassNameProperty, "ScrollViewer")) is not {} outerScrollViewer) {
                 LOGGER.Debug("Window is not a passkey choice prompt because it does not have a ScrollViewer child");
                 return;
             }
@@ -55,7 +55,7 @@ public class WindowsSecurityKeyChooser(ChooserOptions options): AbstractSecurity
             }
 
             // #21: title not rendered immediately
-            if (outerScrollViewer.WaitForFirst(TreeScope.Children, TITLE_CONDITION, TimeSpan.FromSeconds(5), Startup.EXITING) is not { } titleLabel) {
+            if (outerScrollViewer.WaitForFirst(TreeScope.Children, TITLE_CONDITION, TimeSpan.FromSeconds(5), App.Current.exiting) is not {} titleLabel) {
                 LOGGER.Debug("Window is not a passkey choice prompt because there is no TextBlock child of the ScrollViewer after retrying for {0:N3}", options.overallStopwatch.Elapsed.TotalSeconds);
                 return;
             }
