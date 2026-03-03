@@ -28,10 +28,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="5.0.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
-        <PackageReference Include="NLog" Version="6.0.7" />
-        <PackageReference Include="System.Management" Version="10.0.2" />
+        <PackageReference Include="NLog" Version="6.1.1" />
+        <PackageReference Include="System.Management" Version="10.0.3" />
         <PackageReference Include="TaskScheduler" Version="2.12.2" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta5" />
         <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.6" />
