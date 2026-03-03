@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v4
         
     - name: Restore
-      run: dotnet restore --locked-mode --verbosity normal
+      run: dotnet restore --locked-mode
 
     - name: Build
       run: dotnet build ${{ env.ProjectName }} --no-restore --runtime ${{ matrix.targetPlatform }} --configuration Release --no-self-contained

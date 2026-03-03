@@ -1,4 +1,4 @@
-﻿<!--EXTERNAL_PROPERTIES: GITHUB_ACTIONS-->
+<!--EXTERNAL_PROPERTIES: GITHUB_ACTIONS-->
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
@@ -9,7 +9,7 @@
         <Nullable>enable</Nullable>
         <Version>0.5.0</Version>
         <Authors>Ben Hutchison</Authors>
-        <Copyright>© 2025 $(Authors)</Copyright>
+        <Copyright>© 2026 $(Authors)</Copyright>
         <Company>$(Authors)</Company>
         <RollForward>major</RollForward>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
@@ -28,10 +28,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.1" />
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="5.0.1" />
         <PackageReference Include="mwinapi" Version="0.3.0.5" />
         <PackageReference Include="NLog" Version="6.1.1" />
-        <PackageReference Include="System.Management" Version="9.0.10" />
+        <PackageReference Include="System.Management" Version="10.0.3" />
+        <PackageReference Include="TaskScheduler" Version="2.12.2" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta5" />
         <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.6" />
         <PackageReference Include="Workshell.PE.Resources" Version="4.0.0.147" />
@@ -46,7 +47,7 @@
         <EmbeddedResource Update="Resources\LocalizedStrings.resx" Generator="ResXFileCodeGenerator" LastGenOutput="LocalizedStrings.Designer.cs" />
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' == 'Release'">
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' != 'Debug'">
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     </PropertyGroup>
 

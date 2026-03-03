@@ -1,9 +1,9 @@
-﻿<img src="AuthenticatorChooser/YubiKey.ico" height="24" alt="YubiKey 5 NFC USB-A" /> AuthenticatorChooser
+<img src="AuthenticatorChooser/YubiKey.ico" height="24" alt="YubiKey 5 NFC USB-A" /> AuthenticatorChooser
 ===
 
-[![Build status](https://img.shields.io/github/actions/workflow/status/Aldaviva/AuthenticatorChooser/dotnet.yml?branch=master&logo=github)](https://github.com/Aldaviva/AuthenticatorChooser/actions/workflows/dotnet.yml)
+[![Download count](https://img.shields.io/github/downloads/Aldaviva/AuthenticatorChooser/total?logo=github)](https://github.com/Aldaviva/AuthenticatorChooser/releases) [![Build status](https://img.shields.io/github/actions/workflow/status/Aldaviva/AuthenticatorChooser/dotnet.yml?branch=master&logo=github)](https://github.com/Aldaviva/AuthenticatorChooser/actions/workflows/dotnet.yml)
 
-*Program that runs in the background to automatically skip the Windows passkey phone pairing option and go straight to the USB security key.*
+*Background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts.*
 
 <!-- MarkdownTOC autolink="true" bracket="round" autoanchor="false" levels="1,2" -->
 
@@ -61,28 +61,12 @@ Even if this program doesn't click the Next button (because an extra choice was 
 1. Extract the `AuthenticatorChooser.exe` file from the ZIP archive to a directory of your choice, like `C:\Program Files\AuthenticatorChooser\`.
 1. Run the program by double-clicking `AuthenticatorChooser.exe`.
     - Nothing will appear because it's a background program with no UI, but you can tell it's running by searching for `AuthenticatorChooser` in Task Manager.
-1. Register the program to run automatically on user logon with **any one** of the following techniques. Be sure to change the example path below if you chose a different installation directory in step 2. If you'd like to specify additional [command-line arguments](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Command%E2%80%90line-arguments) like `--skip-all-non-security-key-options`, you can do that here too.
+1. Register the program to run automatically on user logon with **any one** of the following techniques. If you'd like to specify additional [command-line arguments](https://github.com/Aldaviva/AuthenticatorChooser/wiki/Command%E2%80%90line-arguments) like `--skip-all-non-security-key-options`, you can do that here too.
     - Run this program once with the `--autostart-on-logon` argument
         ```ps1
         .\AuthenticatorChooser --autostart-on-logon
         ```
-    - Add a shortcut to `AuthenticatorChooser.exe` in the Startup folder (`%APPDATA%\Microsoft\Windows\Start Menu\Startup\`)
-    - Import a `.reg` file
-        ```reg
-        Windows Registry Editor Version 5.00
-
-        [HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run]
-        "AuthenticatorChooser"="\"C:\\Program Files\\AuthenticatorChooser\\AuthenticatorChooser.exe\""
-        ```
-    - Run a Command Prompt command
-        ```bat
-        reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v AuthenticatorChooser /d """C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"""
-        ```
-    - Run a PowerShell cmdlet
-        ```ps1
-        Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name AuthenticatorChooser -Value """C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"""
-        ```
-    - Use `regedit.exe` interactively to go to the `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` key, and then add a new String value with the Name `AuthenticatorChooser` and the Value `"C:\Program Files\AuthenticatorChooser\AuthenticatorChooser.exe"`
+    - Manually add a new task to Task Scheduler that starts `AuthenticatorChooser.exe` as your user with highest privileges when you log in to Windows
 
 ## Demo
 
@@ -102,8 +86,8 @@ If you want to build this application yourself instead of downloading precompile
     cd .\AuthenticatorChooser\AuthenticatorChooser\
     ```
 1. Choose one of the [version tags](https://github.com/Aldaviva/AuthenticatorChooser/tags) to build, or skip this step to use the head commit on the `master` branch.
-    ```ps1
-    git checkout 0.4.0
+    ```sh
+    git checkout 0.5.0
     ```
 1. Build the program.
     ```ps1
@@ -115,9 +99,9 @@ The program will be compiled to the following path, assuming your CPU architectu
 .\bin\Release\net8.0-windows\win-x64\publish\AuthenticatorChooser.exe
 ```
 
-You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 instead of the command line if you prefer.
+You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 or 2026 instead of the command line if you prefer.
 
-- Visual Studio Publishing Profiles have been broken for years unless certain other workloads (like ASP.NET Web Development) are installed, so if you can't publish from VS you'll have to use the `dotnet publish` command above.
+- Visual Studio Publishing Profiles have been [broken for years](https://developercommunity.visualstudio.com/t/Trying-to-publish-to-a-folder-only-build/10905900) unless certain other workloads (like ASP.NET Web Development) are installed, so if you can't publish from VS you'll have to use the `dotnet publish` command above.
 
 ## Related
 

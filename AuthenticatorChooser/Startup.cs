@@ -4,10 +4,10 @@ using ManagedWinapi.Windows;
 using McMaster.Extensions.CommandLineUtils;
 using McMaster.Extensions.CommandLineUtils.Conventions;
 using Microsoft.Win32;
+using Microsoft.Win32.TaskScheduler;
 using NLog;
 using System.Reflection;
 using System.Security.Principal;
-using System.Text;
 using System.Windows.Forms;
 
 // ReSharper disable ClassNeverInstantiated.Global - it's actually instantiated by McMaster.Extensions.CommandLineUtils
@@ -22,6 +22,7 @@ public class Startup {
     private static readonly string                  PROGRAM_VERSION = Assembly.GetEntryAssembly()!.GetName().Version!.ToString(3);
     private static readonly CancellationTokenSource EXITING_TRIGGER = new();
     public static readonly  CancellationToken       EXITING         = EXITING_TRIGGER.Token;
+    private static readonly WindowsIdentity         CURRENT_USER    = WindowsIdentity.GetCurrent();
 
     private static Logger? logger;
 
@@ -72,11 +73,12 @@ public class Startup {
                 return 0;
             }
 
-            if (autostartOnLogon) {
-                registerAsStartupProgram();
+            if (autostartOnLogon && !registerAsStartupProgram()) {
+                return 1;
             }
 
-            using Mutex singleInstanceLock = new(true, $@"Local\{PROGRAM_NAME}_{WindowsIdentity.GetCurrent().User?.Value}", out bool isOnlyInstance);
+            using Mutex singleInstanceLock = new(true, $@"Local\{PROGRAM_NAME}_{CURRENT_USER.User?.Value}", out bool isOnlyInstance);
+            CURRENT_USER.Dispose();
             if (!isOnlyInstance) {
                 logger.Warn("Another instance of {program} is already running for this user, this instance is exiting now.", PROGRAM_NAME);
                 return 2;
@@ -121,46 +123,75 @@ public class Startup {
             return 1;
         } finally {
             LogManager.Shutdown();
+            CURRENT_USER.Dispose();
         }
     }
 
-    private void registerAsStartupProgram() {
-        StringBuilder autostartCommand = new();
-        autostartCommand.Append('"').Append(Environment.ProcessPath).Append('"');
-        if (skipAllNonSecurityKeyOptions) {
-            autostartCommand.Append(' ').Append("--skip-all-non-security-key-options");
-        }
+    private bool registerAsStartupProgram() {
+        try {
+            string domainAndUsername = CURRENT_USER.Name;
 
-        Registry.SetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run", PROGRAM_NAME, autostartCommand.ToString());
-        MessageBox.Show($"{PROGRAM_NAME} is now running in the background, and will also start automatically each time you log in to Windows.", PROGRAM_NAME, MessageBoxButtons.OK,
-            MessageBoxIcon.Information);
+            TaskDefinition scheduledTask = TaskService.Instance.NewTask();
+            scheduledTask.RegistrationInfo.Author = "Ben Hutchison";
+            scheduledTask.RegistrationInfo.Date   = DateTime.Now;
+            scheduledTask.RegistrationInfo.Description =
+                $"{PROGRAM_NAME} is a background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts. \n\nThis scheduled task is necessary to start {PROGRAM_NAME} for you on login with elevated permissions, which are required to interact with the Windows 11 FIDO prompts beginning in January 2026. \n\nhttps://github.com/Aldaviva/{PROGRAM_NAME}";
+            scheduledTask.Principal.RunLevel                  = TaskRunLevel.Highest; // #44: CredentialUIBroker runs with UIAccess integrity level, which is higher than the default Medium level
+            scheduledTask.Settings.Enabled                    = true;
+            scheduledTask.Settings.ExecutionTimeLimit         = TimeSpan.Zero;
+            scheduledTask.Settings.DisallowStartIfOnBatteries = false;
+            scheduledTask.Settings.StopIfGoingOnBatteries     = false;
+            scheduledTask.Settings.Compatibility              = TaskCompatibility.V2_3;
+            scheduledTask.Actions.Add(Environment.ProcessPath!, skipAllNonSecurityKeyOptions ? "--skip-all-non-security-key-options" : null);
+            scheduledTask.Triggers.Add(new LogonTrigger { Enabled = true, UserId = domainAndUsername, Delay = TimeSpan.FromSeconds(15) });
+            TaskService.Instance.RootFolder.RegisterTaskDefinition($"{PROGRAM_NAME} \u2013 {Environment.UserName}", scheduledTask, TaskCreation.CreateOrUpdate, domainAndUsername, null,
+                TaskLogonType.InteractiveToken);
+
+            // #44: Remove the old 0.4.0 registry startup entry, which is no longer adequate. This removal avoid both starting twice and showing a UAC prompt on each login.
+            using RegistryKey? userRun = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            if (userRun is not null) {
+                try {
+                    userRun.DeleteValue(PROGRAM_NAME, true);
+                    logger!.Info("Removed old registry startup entry, which has now been replaced with a Scheduled Task.");
+                } catch (ArgumentException) {
+                    // value had already been removed from the registry before this execution
+                }
+            }
+
+            MessageBox.Show($"{PROGRAM_NAME} is now running in the background, and will also start automatically each time you log in to Windows.", PROGRAM_NAME, MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return true;
+        } catch (Exception e) when (e is not OutOfMemoryException) {
+            MessageBox.Show($"Failed to register {PROGRAM_NAME} to start automatically on Windows logon: {e.GetType().Name} {e.Message}", PROGRAM_NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
     }
 
     private static void showUsage() {
         string processFilename = Path.GetFileName(Environment.ProcessPath)!;
         MessageBox.Show(
             $"""
-             {processFilename}
-                 Runs this program in the background, waiting for FIDO credential dialog boxes to open and choosing the Security Key option each time.
-               
-             {processFilename} --autostart-on-logon
-                 Registers this program to start automatically every time the current user logs on to Windows, and also leaves it running in the background like the first example.
-                 
-             {processFilename} --skip-all-non-security-key-options
-                 Forces this program to choose the Security Key option even if there are other valid options, such as an already-paired phone or Windows Hello PIN or biometrics. By default, without this option, it will only choose the Security Key if the sole other option is pairing a new phone. This is an aggressive behavior, so if it skips an option you need, remember that you can hold Shift when the FIDO prompt appears to temporarily disable this program and manually choose a different option.
-                 
-             {processFilename} --autosubmit-pin-length=$num
-                 When Windows prompts you for the FIDO PIN for your USB security key, automatically submit the dialog once you have typed a PIN that is $num characters long (minimum 4), instead of you manually pressing Enter. Remember that enough consecutive incorrect submissions (8 on YubiKeys) will permanently block the security key until you reset it and lose all its FIDO credentials, so type with care. This will neither autosubmit PINs when registering a new FIDO credential, changing your PIN, or entering a Windows Hello PIN (which Windows autosubmits without this program's help).
-                 
-             {processFilename} --log[=$filename]
-                 Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify $filename, it goes to {Path.Combine(Environment.GetEnvironmentVariable("TEMP") ?? "%TEMP%", PROGRAM_NAME + ".log")}.
-               
-             {processFilename} --help
-                 Shows this usage.
-                 
-             For more information, see https://github.com/Aldaviva/{PROGRAM_NAME}.
-             Press Ctrl+C to copy this message.
-             """, $"{PROGRAM_NAME} {PROGRAM_VERSION} usage", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            {processFilename}
+                Runs this program in the background, waiting for FIDO credential dialog boxes to open and choosing the Security Key option each time.
+              
+            {processFilename} --autostart-on-logon
+                Registers this program to start automatically every time the current user logs on to Windows, and also leaves it running in the background like the first example.
+                
+            {processFilename} --skip-all-non-security-key-options
+                Forces this program to choose the Security Key option even if there are other valid options, such as an already-paired phone or Windows Hello PIN or biometrics. By default, without this option, it will only choose the Security Key if the sole other option is pairing a new phone. This is an aggressive behavior, so if it skips an option you need, remember that you can hold Shift when the FIDO prompt appears to temporarily disable this program and manually choose a different option.
+                
+            {processFilename} --autosubmit-pin-length=$num
+                When Windows prompts you for the FIDO PIN for your USB security key, automatically submit the dialog once you have typed a PIN that is $num characters long (minimum 4), instead of you manually pressing Enter. Remember that enough consecutive incorrect submissions (8 on YubiKeys) will permanently block the security key until you reset it and lose all its FIDO credentials, so type with care. This will neither autosubmit PINs when registering a new FIDO credential, changing your PIN, or entering a Windows Hello PIN (which Windows autosubmits without this program's help).
+                
+            {processFilename} --log[=$filename]
+                Runs this program in the background like the first example, and logs debug messages to a text file. If you don't specify $filename, it goes to {Path.Combine(Environment.GetEnvironmentVariable("TEMP") ?? "%TEMP%", PROGRAM_NAME + ".log")}.
+              
+            {processFilename} --help
+                Shows this usage.
+                
+            For more information, see https://github.com/Aldaviva/{PROGRAM_NAME}.
+            Press Ctrl+C to copy this message.
+            """, $"{PROGRAM_NAME} {PROGRAM_VERSION} usage", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     private static void onWindowsLogoff(object sender, SessionEndingEventArgs args) {
