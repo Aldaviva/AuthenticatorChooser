@@ -10,9 +10,9 @@
       },
       "mwinapi": {
         "type": "Direct",
-        "requested": "[0.3.0.5, )",
-        "resolved": "0.3.0.5",
-        "contentHash": "jb1ox29TMcxe0klNF5yui+ehXHUdEZOuykYaoGI9Okt0s7K5bNWxOzqsng0VVVvvFnW9wNfS4hWYOsE9Xup0GQ==",
+        "requested": "[0.3.0.6, )",
+        "resolved": "0.3.0.6",
+        "contentHash": "ifbh/zHTsN+hrT2kBE4he8+Bq9DS/9b8tA0aVIdJCOK3Y4O0hdFtZSiQHpJX1YkH4/JMmF0V5hHQDahS5i9U1g==",
         "dependencies": {
           "System.Management": "6.0.0"
         }
