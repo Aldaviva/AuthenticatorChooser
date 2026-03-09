@@ -29,7 +29,7 @@
 
     <ItemGroup>
         <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="5.0.1" />
-        <PackageReference Include="mwinapi" Version="0.3.0.5" />
+        <PackageReference Include="mwinapi" Version="0.3.0.6" />
         <PackageReference Include="NLog" Version="6.1.1" />
         <PackageReference Include="System.Management" Version="10.0.3" />
         <PackageReference Include="TaskScheduler" Version="2.12.2" />
