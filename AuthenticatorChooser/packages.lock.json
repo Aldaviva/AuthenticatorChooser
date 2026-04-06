@@ -45,9 +45,12 @@
       },
       "ThrottleDebounce": {
         "type": "Direct",
-        "requested": "[3.0.0-beta5, )",
-        "resolved": "3.0.0-beta5",
-        "contentHash": "hvmR5CBGzzRAO+jJBkZuPUfXeChZRR9X2vfVLYEo7CffFV2oz4yuX9sj80GqH6oxj5KYXodJ+oGaYOtIE+H5tw=="
+        "requested": "[3.0.0-beta6, )",
+        "resolved": "3.0.0-beta6",
+        "contentHash": "hLr071LwvbfwNvjsnEb5FP7BNnmu4qG6++ZHAdVEaLCv01BQ9m3G1PLKv/C8DPJ9hFcs+3EUNh+c9/Lg459HIw==",
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0"
+        }
       },
       "Unfucked.Windows": {
         "type": "Direct",
@@ -69,6 +72,11 @@
           "System.Drawing.Common": "7.0.0",
           "Workshell.PE": "4.0.0.147"
         }
+      },
+      "Microsoft.CSharp": {
+        "type": "Transitive",
+        "resolved": "4.7.0",
+        "contentHash": "pTj+D3uJWyN3My70i2Hqo+OXixq3Os2D1nJ2x92FFo6sk8fYS1m1WLNTs0Dc1uPaViH0YvEEwvzddQ7y4rhXmA=="
       },
       "Microsoft.Win32.Registry": {
         "type": "Transitive",
