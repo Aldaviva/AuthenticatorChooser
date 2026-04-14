@@ -147,7 +147,7 @@ public class Startup {
             TaskService.Instance.RootFolder.RegisterTaskDefinition($"{PROGRAM_NAME} \u2013 {Environment.UserName}", scheduledTask, TaskCreation.CreateOrUpdate, domainAndUsername, null,
                 TaskLogonType.InteractiveToken);
 
-            // #44: Remove the old 0.4.0 registry startup entry, which is no longer adequate. This removal avoid both starting twice and showing a UAC prompt on each login.
+            // #44: Remove the old 0.4.0 registry startup entry, which is no longer adequate. This removal avoids both starting twice and showing a UAC prompt on each login.
             using RegistryKey? userRun = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
             if (userRun is not null) {
                 try {
