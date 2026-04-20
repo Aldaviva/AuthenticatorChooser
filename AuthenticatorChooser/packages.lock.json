@@ -54,12 +54,12 @@
       },
       "Unfucked.Windows": {
         "type": "Direct",
-        "requested": "[0.0.1-beta.9, )",
-        "resolved": "0.0.1-beta.9",
-        "contentHash": "MIIM4MzKMgasq3emyh36F5kAynuQ2p4AKzf740f/DF8YsLNOV/WvImfK4zz2tBErZ563RxDzAq87uYqgDRgTGA==",
+        "requested": "[0.0.1-beta.11, )",
+        "resolved": "0.0.1-beta.11",
+        "contentHash": "lb6D6VI8pFcuP9Y71jsGNIsZGJLU77aRyj5nmkC2HRDBDaMqAvYkX7zuOfWDnBBPcw30Qcs/FuhRneJejBLS7Q==",
         "dependencies": {
-          "ThrottleDebounce": "3.0.0-beta5",
-          "Unfucked": "0.0.1-beta.38",
+          "ThrottleDebounce": "3.0.0-beta6",
+          "Unfucked": "0.0.1-beta.40",
           "mwinapi": "0.3.0.6"
         }
       },
@@ -122,8 +122,8 @@
       },
       "Unfucked": {
         "type": "Transitive",
-        "resolved": "0.0.1-beta.38",
-        "contentHash": "kubqp2LfAyeKSwsLbq+qXPssbGNUzjVICfDqbPf9LgO50a/TM8KfQnxBxkZo8YoUksII0avp1NJAZoosChGk9w=="
+        "resolved": "0.0.1-beta.40",
+        "contentHash": "9V3WIbszgP5JPkbeoy3N5kA3WRqnXLXNV0Zi4X/LO0gW/uCrTar7714juleFVaE2KWPtrS5Me245PprN86Vy/A=="
       },
       "Workshell.PE": {
         "type": "Transitive",

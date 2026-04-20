@@ -34,7 +34,7 @@
         <PackageReference Include="System.Management" Version="10.0.5" />
         <PackageReference Include="TaskScheduler" Version="2.12.2" />
         <PackageReference Include="ThrottleDebounce" Version="3.0.0-beta6" />
-        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.9" />
+        <PackageReference Include="Unfucked.Windows" Version="0.0.1-beta.11" />
         <PackageReference Include="Workshell.PE.Resources" Version="4.0.0.147" />
     </ItemGroup>
 
