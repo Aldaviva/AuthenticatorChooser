@@ -19,6 +19,9 @@ jobs:
           - targetPlatform: win-arm64
 
     steps:
+    - name: Unfuck Git
+      run: git config set --global core.autocrlf false
+
     - name: Clone
       uses: actions/checkout@v6
         
