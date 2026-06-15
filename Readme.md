@@ -35,7 +35,7 @@ Now it says "To sign in to “`domain`”, choose a device with a saved passkey,
 
 This is a background program that runs headlessly in your Windows user session. It waits for Windows FIDO credential provider prompts to appear, then chooses the Security Key option and clicks Next for you automatically. From the user's perspective, the Bluetooth screen barely even appears before it's replaced with the prompt to plug in your USB security key.
 
-<p align="center"><img src=".github/images/demo.gif" alt="demo" width="464" /></p>     
+<p align="center"><img src=".github/images/demo.gif" alt="demo" width="465" /></p>     
 
 Internally, this program uses [Microsoft UI Automation](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-uiautomationoverview) to read and interact with the dialog boxes.
 
