@@ -101,8 +101,6 @@ The program will be compiled to the following path, assuming your CPU architectu
 
 You can also use an IDE like [Visual Studio](https://visualstudio.microsoft.com/vs/) Community 2022 or 2026 instead of the command line if you prefer.
 
-- Visual Studio Publishing Profiles have been [broken for years](https://developercommunity.visualstudio.com/t/Trying-to-publish-to-a-folder-only-build/10905900) unless certain other workloads (like ASP.NET Web Development) are installed, so if you can't publish from VS you'll have to use the `dotnet publish` command above.
-
 ## Related
 
 ### Creating new passkeys
