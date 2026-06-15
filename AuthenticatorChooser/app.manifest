@@ -4,7 +4,8 @@
     <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
         <security>
             <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
-                <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+                <!-- The CredentialUIBroker FIDO prompt runs with UIAccess since Jan 2026 https://github.com/Aldaviva/AuthenticatorChooser/issues/44 -->
+                <requestedExecutionLevel level="asInvoker" uiAccess="true" />
             </requestedPrivileges>
         </security>
     </trustInfo>
