@@ -90,8 +90,9 @@ public class Startup {
                 logger.Info("Operating system is {name} {marketingVersion} {version} {arch}", os.name, os.marketingVersion, os.version, os.architecture);
                 logger.Info("{Locales are} {locales}", I18N.LOCALE_NAMES.Count == 1 ? "Locale is" : "Locales are", string.Join(", ", I18N.LOCALE_NAMES));
 
+                using TrayIcon              trayIcon              = new TrayIcon(() => { EXITING_TRIGGER.Cancel(); Application.Exit(); });
                 using WindowOpeningListener windowOpeningListener = new WindowOpeningListenerImpl();
-                WindowsSecurityKeyChooser   securityKeyChooser    = new(new ChooserOptions(skipAllNonSecurityKeyOptions, autosubmitPinLength));
+                WindowsSecurityKeyChooser   securityKeyChooser    = new(new ChooserOptions(skipAllNonSecurityKeyOptions, autosubmitPinLength), trayIcon);
 
                 windowOpeningListener.windowOpened += (_, window) => securityKeyChooser.chooseUsbSecurityKey(window);
 
