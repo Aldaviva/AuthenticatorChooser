@@ -135,8 +135,8 @@ public class Startup {
             scheduledTask.RegistrationInfo.Author = "Ben Hutchison";
             scheduledTask.RegistrationInfo.Date   = DateTime.Now;
             scheduledTask.RegistrationInfo.Description =
-                $"{PROGRAM_NAME} is a background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts. \n\nThis scheduled task is necessary to start {PROGRAM_NAME} for you on login with elevated permissions, which are required to interact with the Windows 11 FIDO prompts beginning in January 2026. \n\nhttps://github.com/Aldaviva/{PROGRAM_NAME}";
-            scheduledTask.Principal.RunLevel                  = TaskRunLevel.Highest; // #44: CredentialUIBroker runs with UIAccess integrity level, which is higher than the default Medium level
+                $"{PROGRAM_NAME} is a background program that skips the phone pairing option and chooses the USB security key in Windows FIDO/WebAuthn prompts. \n\nThis scheduled task starts {PROGRAM_NAME} for you on login. {PROGRAM_NAME} uses UIAccess (declared in its application manifest) to interact with the Windows 11 FIDO prompts beginning in January 2026, so it no longer needs to run elevated. \n\nhttps://github.com/Aldaviva/{PROGRAM_NAME}";
+            scheduledTask.Principal.RunLevel                  = TaskRunLevel.LUA; // #44: CredentialUIBroker runs at the UIAccess integrity level; the app's uiAccess="true" manifest lets it interact without elevation, so run as a standard user (LUA) instead of Highest
             scheduledTask.Settings.Enabled                    = true;
             scheduledTask.Settings.ExecutionTimeLimit         = TimeSpan.Zero;
             scheduledTask.Settings.DisallowStartIfOnBatteries = false;
