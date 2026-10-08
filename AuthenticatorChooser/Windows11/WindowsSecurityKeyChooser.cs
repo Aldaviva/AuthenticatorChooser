@@ -7,7 +7,7 @@ using Unfucked;
 
 namespace AuthenticatorChooser.Windows11;
 
-public class WindowsSecurityKeyChooser(ChooserOptions options): AbstractSecurityKeyChooser<SystemWindow> {
+public class WindowsSecurityKeyChooser(ChooserOptions options, TrayIcon trayIcon): AbstractSecurityKeyChooser<SystemWindow> {
 
     // #4: unfortunately, this class name is shared with the UAC prompt, detectable when desktop dimming is disabled
     private const string WINDOW_CLASS_NAME  = "Credential Dialog Xaml Host";
@@ -71,7 +71,7 @@ public class WindowsSecurityKeyChooser(ChooserOptions options): AbstractSecurity
 
             bool isShiftDown = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
 
-            strategy.handleWindow(actualTitle!, fidoEl, outerScrollViewer, isShiftDown);
+            strategy.handleWindow(actualTitle!, fidoEl, outerScrollViewer, isShiftDown || !trayIcon.isEnabled);
 
         } catch (ElementNotAvailableException e) {
             LOGGER.Error(e, "Element in Windows Security dialog box disappeared before this program could interact with it, skipping this dialog box instance");
